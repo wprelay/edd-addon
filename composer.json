@@ -1,0 +1,20 @@
+{
+  "name": "edd-realywp/edd-relaywp",
+  "autoload": {
+    "psr-4": {
+      "EDDA\\Affiliate\\App\\": "app/",
+      "EDDA\\Affiliate\\Core\\": "Core/"
+    }
+  },
+  "require": {
+    "vlucas/valitron": "^1.4",
+    "yahnis-elsts/plugin-update-checker": "v5.5",
+    "cartrabbit/request-helper": "dev-main"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:wprelay/request-helper.git"
+    }
+  ]
+}

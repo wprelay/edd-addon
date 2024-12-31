@@ -1,0 +1,18 @@
+<?php
+
+namespace EDDA\Affiliate\App\Hooks;
+
+defined('ABSPATH') or exit;
+
+class WPHooks extends RegisterHooks
+{
+    public static function register()
+    {
+        static::registerCoreHooks('wp-hooks.php');
+
+        if (rwpa_app()->get('is_pro_plugin')) {
+            static::registerProHooks('wp-hooks.php');
+        }
+    }
+}
+
