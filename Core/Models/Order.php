@@ -1,12 +1,12 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Models;
+namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\WC;
-use RelayWp\Affiliate\App\Model;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\EDD;
+use EDDA\Affiliate\App\Model;
 
 class Order extends Model
 {
@@ -41,7 +41,7 @@ class Order extends Model
             ) {$charset};";
     }
 
-    public static function havingAffiliateCoupon(\WC_Order $order)
+    public static function havingAffiliateCoupon( $order)
     {
         $applied_coupons = $order->get_coupon_codes();
 
@@ -58,7 +58,7 @@ class Order extends Model
     {
         $medium = $order->get_meta(Affiliate::ORDER_FROM_META_KEY);
         $recurring_order_id = $order->get_meta(Affiliate::ORDER_RECURRING_ID, true);
-        $totalPrice = WC::getTotalPrice($order);
+        $totalPrice = EDD::getTotalPrice($order);
         //create order if already not created
         $insertedRows = Order::query()->create([
             'woo_order_id' => $order->get_id(),
@@ -85,7 +85,7 @@ class Order extends Model
 
     public static function updateOrder(\WC_Order $order, $relayWpOrder)
     {
-        $totalPrice = WC::getTotalPrice($order);
+        $totalPrice = EDD::getTotalPrice($order);
         //create order if already not created
         $rowsUpdated = Order::query()->update([
             'woo_order_id' => $order->get_id(),
@@ -114,6 +114,7 @@ class Order extends Model
         if ($referralCode = Functions::isAffiliateCookieSet()) {
             $affiliate = Affiliate::query()->findBy('referral_code', $referralCode);
             $medium = 'link';
+
         } elseif ($coupon_id = Order::havingAffiliateCoupon($order)) {
             $referralCode = wc_get_coupon_code_by_id($coupon_id);
             if (empty($referralCode)) {

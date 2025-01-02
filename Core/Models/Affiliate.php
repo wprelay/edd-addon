@@ -18,6 +18,9 @@ class Affiliate extends Model
     }
     public static function createCoupon($affiliate, $program)
     {
+        add_filter('is_create_coupon', function($value) {
+            return false;
+        });
         $customerDiscount = CustomerDiscount::query()->where("program_id = {$program->id}")->first();
 
         $couponData = static::getEddDiscountData($affiliate, $program, $customerDiscount);

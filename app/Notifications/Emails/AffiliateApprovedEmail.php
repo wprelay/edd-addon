@@ -31,7 +31,6 @@ class AffiliateApprovedEmail extends EDD_Emails
 
     public function trigger($data)
     {
-        error_log("trigger function called");
         if (empty($data['email'])) {
             return;
         }

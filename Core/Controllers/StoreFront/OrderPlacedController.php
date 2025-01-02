@@ -1,12 +1,12 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Controllers\StoreFront;
+namespace EDDA\Affiliate\Core\Controllers\StoreFront;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Services\Settings;
-use RelayWp\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Services\Settings;
+use EDDA\Affiliate\Core\Models\Affiliate;
 use RelayWp\Affiliate\Core\Models\CommissionEarning;
 use RelayWp\Affiliate\Core\Models\CommissionTier;
 use RelayWp\Affiliate\Core\Models\Customer;
@@ -14,15 +14,15 @@ use RelayWp\Affiliate\Core\Models\Member;
 use RelayWp\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Product;
 use RelayWp\Affiliate\Core\Models\Program;
-use RelayWp\Affiliate\Core\Models\Rules;
+//use Relaywp\Affiliate\Core\Models\Rules;
 use RelayWp\Affiliate\Core\Models\Transaction;
 
 class OrderPlacedController
 {
 
-    public static function orderCreatedFromBlockCheckout(\WC_Order $order)
+    public static function orderCreatedFromBlockCheckout($order_id)
     {
-        static::orderCreated($order->get_id(), []);
+        static::orderCreated($order_id, []);
     }
     //order created only store the affiliate id to order meta
 
@@ -31,9 +31,8 @@ class OrderPlacedController
     // calculate commission and update into commission earnings
     public static function orderCreated($order_id, $data)
     {
-        $order = wc_get_order($order_id);
-
-        $track_order_data = apply_filters('rwpa_track_affiliate_order', [], $order);
+        $order = edd_get_order($order_id);
+        $track_order_data = apply_filters('rwpa_edd_track_affiliate_order', [], $order);
 
         if (empty($track_order_data)) {
             return false;

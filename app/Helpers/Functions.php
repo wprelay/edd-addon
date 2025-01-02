@@ -37,11 +37,11 @@ class Functions
     {
         if ($amount == 0 || empty($amount)) $amount = 0;
 
-        $price = wc_price($amount, [
-            'currency' => $currencyCode
-        ]);
+        if (function_exists('edd_currency_symbol')) {
+            return html_entity_decode(edd_currency_symbol($currencyCode)) . number_format($amount, 2); // Format amount as needed
+        }
 
-        return html_entity_decode(wp_strip_all_tags($price));
+        return $currencyCode . ' ' . number_format($amount, 2);
     }
 
     public static function utcToWPTime($datetime, $format = 'Y-m-d H:i:s')

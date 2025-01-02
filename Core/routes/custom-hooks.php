@@ -5,13 +5,16 @@ defined("ABSPATH") or exit;
 use RelayWp\Affiliate\Core\Controllers\Admin\General\BackgroundJobController;
 use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\EmailController;
 use RelayWp\Affiliate\Core\Models\CommissionTier;
-use RelayWp\Affiliate\Core\Models\Order;
+use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;
 use RelayWp\Affiliate\Core\Payments\Coupon;
 use RelayWp\Affiliate\Core\Payments\Offline;
 use RelayWp\Affiliate\Core\Payments\RWPPayment;
 use RelayWp\Affiliate\Core\ShortCodes\ShortCodes;
-
+use EDDA\Affiliate\App\Helpers\EDD;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\Core\Controllers\Admin\EDDController;
 $store_front_hooks = [
     'actions' => [
         'rwpa_auto_approve_commission' => ['callable' => [BackgroundJobController::class, 'autoApproveCommission'], 'priority' => 10, 'accepted_args' => 1],
@@ -23,9 +26,18 @@ $store_front_hooks = [
         'rwpa_get_commission_details_for_percentage_per_sale_type' => ['callable' => [CommissionTier::class, 'getPercentagePerSaleAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getRecursiveDataToStore'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_core_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getCoreRecursiveData'], 'priority' => 10, 'accepted_args' => 4],
-        'rwpa_track_affiliate_order' => ['callable' => [Order::class, 'isNeedToTrackTheOrder'], 'priority' => 10, 'accepted_args' => 2],
+        'rwpa_edd_track_affiliate_order' => ['callable' => [Order::class, 'isNeedToTrackTheOrder'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_get_shortcodes_classes' => ['callable' => [ShortCodes::class, 'getShortCodes'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_coupon_payment_available_for_currency' => ['callable' => [Coupon::class, 'isCouponPaymentAvailable'], 'priority' => 10, 'accepted_args' => 2],
+
+        'rwpa_get_default_currency' => ['callable' => [EDD::class, 'getDefaultCurrency'], 'priority' => 20, 'accepted_args' => 0],
+        'rwpa_get_currency_list' => ['callable' => [EDD::class, 'getCurrencyList'], 'priority' => 20, 'accepted_args' => 0],
+        'rwpa_get_currency_symbol' => ['callable' => [EDD::class, 'getEDDCurrencySymbol'], 'priority' => 20, 'accepted_args' => 1],
+        'rwpa_get_currency_symbol_with_code' => ['callable' => [EDD::class, 'getEDDCurrencySymbolCode'], 'priority' => 20, 'accepted_args' => 1],
+        'rwpa_format_amount' => ['callable' => [Functions::class, 'formatAmount'], 'priority' => 20, 'accepted_args' => 2],
+        'rwpa_create_coupon' => ['callable' => [Affiliate::class, 'createCoupon'], 'priority' => 5, 'accepted_args' => 2],
+        'edda_search_product_list' => ['callable' => [EDDController::class, 'getProductsList'], 'priority' => 10, 'accepted_args' => 1],
+        'edda_search_categories_list' => ['callable' => [EDDController::class, 'getCategoriesList'], 'priority' => 10, 'accepted_args' => 1]
 
     ]
 ];

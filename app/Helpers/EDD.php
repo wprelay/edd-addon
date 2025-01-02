@@ -153,14 +153,13 @@ class EDD
         }
     }
 
-    public static function getWooCommerceCurrencySymbol($currencyCode = '')
+    public static function getEDDCurrencySymbol($currencyCode = '')
     {
-        if(function_exists('get_woocommerce_currency_symbol') && !defined( 'WC_VERSION' ))
-        {
-            $currency = get_woocommerce_currency_symbol($currencyCode);
-            return html_entity_decode($currency);
+        if (empty($currencyCode) && function_exists('edd_get_currency')) {
+            $currencyCode = edd_get_currency();
         }
-        return '';
+        $currency = edd_currency_symbol($currencyCode);
+        return html_entity_decode($currency);
     }
 
     static function getSession($key, $default = NULL)
@@ -291,21 +290,19 @@ class EDD
         get_edit_post_link($order_id, '');
     }
 
-    public static function getWcCurrencySymbol($code = 'USD')
+    public static function getEDDCurrencySymbolCode($code = 'USD')
     {
-        if (function_exists('get_woocommerce_currency_symbol')) {
-            return html_entity_decode(get_woocommerce_currency_symbol($code));
+        if (function_exists('edd_currency_symbol')) {
+            return html_entity_decode(edd_currency_symbol($code));
         }
 
-        return '$';
+        return '$'; // Default to USD if EDD is not active or the function does not exist
     }
 
     public static function getCurrencyList()
     {
-        if(function_exists('get_woocommerce_currencies') &&  !defined( 'WC_VERSION' ))
-        {
-            $currencies = get_woocommerce_currencies();
-            return $currencies;
+        if (function_exists('edd_get_currencies')) {
+            return edd_get_currencies();
         }
         return [];
     }
@@ -323,12 +320,14 @@ class EDD
         return false;
     }
 
-    public static function getDefaultCurrency(){
-        if(function_exists('get_woocommerce_currency') && !defined( 'WC_VERSION' )){
-            return get_woocommerce_currency();
+    public static function getDefaultCurrency()
+    {
+        if (function_exists('edd_get_currency')) {
+            return edd_get_currency();
         }
         return '';
     }
+
     public static function isWoocommerceIntsalled() : bool{
         if (class_exists('EDD') && function_exists('WC')) {
             return true;

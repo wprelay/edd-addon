@@ -75,37 +75,39 @@ class EDDController
     public static function getProductsList(Request $request)
     {
         try {
+            // Extract search query and limit from the request
+            $searchQuery = $request->get('search', '');
+            $limit = 20;
 
+            // Define query arguments for EDD
             $args = [
-                'search' => $request->get('search'),
-                'limit' => 20,
+                'post_type'      => 'download',
+                'posts_per_page' => $limit,
+                's'              => $searchQuery,
+                'post_status'    => 'publish',
             ];
 
-            //remove_all_filters('woocommerce_data_stores');
-            $data_store = \WC_Data_Store::load('product');
+            $query = new \WP_Query($args);
 
-            $product_ids = !empty($args['search'])
-                ? $data_store->search_products($args['search'], '', true, false, $args['limit'])
-                : $data_store->get_products($args);
-
-
-            if (empty($product_ids)) {
+            if (!$query->have_posts()) {
                 Response::success(['products' => []]);
             }
 
-            $data = array_map(function ($product_id) {
+            $data = array_map(function ($post) {
                 return [
-                    'value' => (string)$product_id,
-                    'label' => WC::getProductNameWithID($product_id),
+                    'value' => (string)$post->ID,
+                    'label' => $post->post_title,
                 ];
-            }, $product_ids);
+            }, $query->posts);
 
-            //removing index sometimes the index is not in order causing application break
+            wp_reset_postdata();
+
             $data = array_values($data);
 
 
             Response::success(['products' => $data]);
-        } catch (\Exception | Error $exception) {
+        } catch (\Exception | \Error $exception) {
+
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());
         }
@@ -118,31 +120,31 @@ class EDDController
             $args = [
                 'search' => $request->get('search'),
                 'limit' => 20,
+                'taxonomy' => 'download_category',
+                'hide_empty' => false,
             ];
 
-            $args['taxonomy'] = 'product_cat';
-
-            $categories = apply_filters('rwpa_product_category_list', WC::getTerms($args));
+            // Get categories using WordPress's get_terms function
+            $categories = get_terms($args);
 
             if (empty($categories)) {
                 Response::success(['categories' => []]);
             }
 
             $data = [];
-
             foreach ($categories as $category) {
-                $category_label = !empty(WC::getCategoryParent($category->parent)) ? WC::getCategoryParent($category->parent) . ' -> ' : '';
+                $parent_category = get_term($category->parent, 'download_category');
+                $category_label = !empty($parent_category) ? $parent_category->name . ' -> ' : '';
                 $data[] = [
                     'label' => $category_label . $category->name,
                     'value' => $category->term_id,
                 ];
             }
-
             $data = array_values($data);
-
             $data = (array)apply_filters('rwpa_categories_search_in_customer_discount_coupon', $data);
 
             Response::success(['categories' => $data]);
+
         } catch (\Exception | Error $exception) {
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());

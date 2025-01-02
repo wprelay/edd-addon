@@ -53,10 +53,8 @@ class EmailController
             return false;
         });
         try {
-            error_log("edd approved email is called 1");
             $emails = edd_get_email_templates();
             if (isset($emails['AffiliateApprovedEmail'])) {
-                error_log("edd approved email is called 2");
                 $emails['AffiliateApprovedEmail']->trigger($data);
             }
         } catch (\Error $error) {
@@ -66,6 +64,9 @@ class EmailController
 
     public static function sendAffiliateRejectedEmail($data)
     {
+        add_filter('rwpa_is_need_to_send_email', function($value) {
+            return false;
+        });
         try {
             // Get the registered EDD email templates
             $emails = edd_get_email_templates();
@@ -79,6 +80,9 @@ class EmailController
 
     public static function paymentProcessedEmail($data)
     {
+        add_filter('rwpa_is_need_to_send_email', function($value) {
+            return false;
+        });
         try {
             // Get the registered EDD email templates
             $emails = edd_get_email_templates();
@@ -94,6 +98,9 @@ class EmailController
 
     public static function commissionApprovedEmail($data)
     {
+        add_filter('rwpa_is_need_to_send_email', function($value) {
+            return false;
+        });
         try {
             // Get the registered EDD email templates
             $emails = edd_get_email_templates();
@@ -109,6 +116,9 @@ class EmailController
 
     public static function commissionRejectedEmail($data)
     {
+        add_filter('rwpa_is_need_to_send_email', function($value) {
+            return false;
+        });
         try {
             // Get the registered EDD email templates
             $emails = edd_get_email_templates();
@@ -124,6 +134,9 @@ class EmailController
 
     public static function affiliateRegisteredEmail($data)
     {
+        add_filter('rwpa_is_need_to_send_email', function($value) {
+            return false;
+        });
         try {
             // Get the registered EDD email templates
             $emails = edd_get_email_templates();
@@ -139,6 +152,9 @@ class EmailController
 
     public static function newSaleMadeEmail($data, $order_id)
     {
+        add_filter('rwpa_is_need_to_send_email', function($value) {
+            return false;
+        });
         try {
             // Get the registered EDD email templates
             $emails = edd_get_email_templates();
