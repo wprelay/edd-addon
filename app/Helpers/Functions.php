@@ -8,8 +8,8 @@ use DateTime;
 use DateTimeZone;
 use Cartrabbit\Request\Request;
 use Exception;
-use RelayWp\Affiliate\App\Route;
-use RelayWp\Affiliate\App\Services\Settings;
+use EDDA\Affiliate\App\Route;
+use EDDA\Affiliate\App\Services\Settings;
 
 defined('ABSPATH') or exit;
 

@@ -4,15 +4,14 @@ namespace EDDA\Affiliate\App\Hooks;
 
 defined('ABSPATH') or exit;
 
-class CustomHooks extends RegisterHooks
+class EddHooks extends RegisterHooks
 {
     public static function register()
     {
-        static::registerCoreHooks('custom-hooks.php');
+        static::registerCoreHooks('edd-hooks.php');
 
         if (eddApp()->get('is_pro_plugin')) {
-            static::registerProHooks('custom-hooks.php');
+            static::registerProHooks('edd-hooks.php');
         }
     }
 }
-

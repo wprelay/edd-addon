@@ -4,8 +4,8 @@ namespace EDDA\Affiliate\App\Hooks;
 
 defined('ABSPATH') or exit;
 
-use RelayWp\Affiliate\App\Helpers\PluginHelper;
-use RelayWp\Affiliate\Core\Controllers\Api\PageController;
+use EDDA\Affiliate\App\Helpers\PluginHelper;
+use EDDA\Affiliate\Core\Controllers\Api\PageController;
 
 class AdminHooks extends RegisterHooks
 {

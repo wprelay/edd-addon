@@ -4,13 +4,14 @@ namespace EDDA\Affiliate\App\Helpers;
 
 defined('ABSPATH') or exit;
 
-use RelayWp\Affiliate\App\Services\Database;
-use RelayWp\Affiliate\App\Services\Settings;
+use EDDA\Affiliate\App\Services\Database;
+use EDDA\Affiliate\App\Services\Settings;
 
 class EDD
 {
     public static function saveDiscount($discountData, $discountId = null)
     {
+
         // Check if Easy Digital Downloads is active
         if (!function_exists('edd_add_discount')) {
             return false;
@@ -21,15 +22,17 @@ class EDD
             'name'              => $discountData['name'], // Discount name
             'code'              => $discountData['code'], // Discount code
             'status'            => $discountData['status'] ?? 'active', // Default to active if not provided
-            'type'              => $discountData['discount_type'], // Discount type (e.g., 'percent' or 'flat')
-            'amount'            => $discountData['discount_value'], // Discount amount
-            'max_uses'          => $discountData['usage_limit_per_coupon'] ?? null, // Max usage limit
+            'type'              => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
+            'amount'            => $discountData['amount'], // Discount amount
+            'max_uses'          => $discountData['max_uses'] ?? null, // Max usage limit
             'start'             => !empty($discountData['start_date']) ? $discountData['start_date'] : null,
-            'expiration'        => !empty($discountData['expiry_date']) ? $discountData['expiry_date'] : null,
-            'min_price'         => $discountData['minimum_amount'] ?? 0, // Minimum cart amount
-            'product_reqs'      => $discountData['product_ids'] ?? [], // Required products
+            'expiration'        => !empty($discountData['end_date']) ? $discountData['expiry_date'] : null,
+            'min_price'         => $discountData['min_charge_amount'] ?? 0, // Minimum cart amount
+            'product_reqs'      => $discountData['product_reqs'] ?? [], // Required products
+            'once_per_customer' => $discountData['once_per_customer'] ?? 0,
             'product_condition' => 'all', // Use 'all' or 'any' based on your requirement
-            'excluded_products' => $discountData['excluded_product_ids'] ?? [], // Excluded products
+            'excluded_products' => $discountData['excluded_products'] ?? [],
+            'scope'             => $discountData['scope'] // Excluded products
         ];
 
         // Update existing discount or create a new one

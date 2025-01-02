@@ -114,7 +114,7 @@ if (function_exists('isEddInstalled')) {
 }
 
 if (!function_exists('eddaApp')) {
-    function eddaApp(): App
+    function eddApp(): App
     {
         return App::make();
     }
@@ -123,7 +123,7 @@ if (!function_exists('eddaApp')) {
 //here __FILE__ Will Return the Included File Path so it the base of the starting point.
 // To bootstrap the plugin
 if (class_exists('EDDA\Affiliate\App\App')) {
-    $app = eddaApp();
+    $app = eddApp();
     $app->bootstrap(); // to load the plugin
 } else {
     //    wp_die('Plugin is unable to find the App class.');

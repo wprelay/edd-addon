@@ -2,43 +2,44 @@
 
 namespace EDDA\Affiliate\App\Notifications\Emails;
 
-use RelayWp\Affiliate\App\Helpers\WC;
-use WC_Email;
-
 defined('ABSPATH') or exit;
 
-class PaymentProcessedEmail extends WC_Email
+use EDD_Emails;
+use RelayWp\Affiliate\App\Helpers\WC;
+
+class PaymentProcessedEmail extends EDD_Emails
 {
 
     public function __construct()
     {
-        // Email slug we can use to filter other data.
+        parent::__construct();
+
+        // Email details
         $this->id = 'rwpa_affiliate_payment_processed_email';
         $this->title = __('Payment Processed Email', 'relay-affiliate-marketing');
         $this->description = __('An Email sent when the affiliate payment is processed', 'relay-affiliate-marketing');
-        // For admin area to let the user know we are sending this email to customers.
         $this->customer_email = true;
 
+        // Email heading and subject
         $this->heading = __("[{site_title}]  We've processed your affiliate payout", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}]  E We've processed your affiliate payout", 'relay-affiliate-marketing');
 
-        $this->subject = __("[{site_title}]  We've processed your affiliate payout", 'relay-affiliate-marketing');
-
-        // Template paths.
-        $this->template_html = 'affiliate-payment-processed.php';
-
-        $this->template_plain = 'plain/affiliate-payment-processed.php';
-        parent::__construct();
-
-        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
-
-        // Action to which we hook onto to send the email.
+        // Template paths
+        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-payment-processed.php';
+        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-payment-processed.php';
+        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
     }
 
     public function trigger($data)
     {
-        $email = $data['email'];
-        $html = $this->get_content();
+        if (empty($data['email'])) {
+            return;
+        }
 
+        // Get the email content
+        $html = $this->get_content_html();
+
+        // Define the shortcodes for the email
         $short_codes = [
             '{{affiliate_name}}' => "{$data['first_name']} {$data['last_name']}",
             '{{email}}' => $data['email'],
@@ -46,41 +47,39 @@ class PaymentProcessedEmail extends WC_Email
             '{{payment_source}}' => $data['payment_source'],
             '{{payout_date}}' => $data['payout_date'],
             '{{payout_affiliate_notes}}' => $data['payout_affiliate_notes'],
-            '{{affiliate_dashboard}}' => WC::getAffilateEndPoint(),
-            '{{store_name}}' => WC::getStoreName(),
+            '{{affiliate_dashboard}}' => "WC::getAffilateEndPoint()",
+            '{{store_name}}' =>' WC::getStoreName()',
         ];
 
-        $short_codes = apply_filters('rwpa_affiliate_rejected_email_short_codes', $short_codes);
+        // Apply any custom filters for shortcodes
+        $short_codes = apply_filters('rwpa_affiliate_payment_processed_email_short_codes', $short_codes);
 
+        // Replace shortcodes in the HTML content
         foreach ($short_codes as $short_code => $short_code_value) {
             $html = str_replace($short_code, $short_code_value, $html);
         }
 
-        $this->send($email, $this->get_subject(), $html, $this->get_headers(), $this->get_attachments());
+        // Send the email to the affiliate
+        $this->send($data['email'], $this->subject, $html, $this->get_headers(), $this->get_attachments());
     }
 
     public function get_content_html()
     {
-        return wc_get_template_html($this->template_html, array(
-            'order' => $this->object,
-            'email_heading' => $this->get_heading(),
-            'sent_to_admin' => false,
-            'plain_text' => false,
-            'email' => $this
-        ), '', $this->template_base);
+        // Get the HTML content for the email template
+        return $this->get_content($this->template_html);
     }
 
     public function get_content_plain()
     {
-        $html = wc_get_template_html($this->template_plain, array(
-            'order' => $this->object,
-            'email_heading' => $this->get_heading(),
-            'sent_to_admin' => false,
-            'plain_text' => true,
-            'email' => $this
-        ), '', $this->template_base);
+        // Get the plain-text content for the email template
+        return $this->get_content($this->template_plain);
+    }
 
-
+    public function get_content($template)
+    {
+        ob_start();
+        include $template;
+        $html = ob_get_clean();
         return $html;
     }
 }

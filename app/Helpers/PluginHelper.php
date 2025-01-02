@@ -14,7 +14,7 @@ class PluginHelper
 {
     public static function isPRO()
     {
-        $is_pro = rwpa_app()->get('is_pro_plugin');
+        $is_pro = eddApp()->get('is_pro_plugin');
 
         if (empty($is_pro)) return false;
 
@@ -24,13 +24,12 @@ class PluginHelper
     public static function getAuthRoutes()
     {
         $is_pro = static::isPRO();
-
         $routes = [];
         if ($is_pro) {
-            $routes = require(RWPA_PLUGIN_PATH . 'Pro/routes/auth-api.php');
+            $routes = require(EDDA_PLUGIN_PATH . 'Pro/routes/auth-api.php');
         }
 
-        $core_routes = require(RWPA_PLUGIN_PATH . 'Core/routes/auth-api.php');
+        $core_routes = require(EDDA_PLUGIN_PATH . 'Core/routes/auth-api.php');
 
         $routes = array_merge($routes, $core_routes);
 
@@ -40,10 +39,10 @@ class PluginHelper
     public static function pluginRoutePath($pro = false)
     {
         if ($pro) {
-            return RWPA_PLUGIN_PATH . 'Pro/routes';
+            return EDDA_PLUGIN_PATH . 'Pro/routes';
         }
 
-        return RWPA_PLUGIN_PATH . 'Core/routes';
+        return EDDA_PLUGIN_PATH . 'Core/routes';
     }
 
     public static function logError($message, $location = [], $exception = null)

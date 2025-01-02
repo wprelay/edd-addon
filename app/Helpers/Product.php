@@ -2,7 +2,7 @@
 
 namespace EDDA\Affiliate\App\Helpers;
 
-use RelayWp\Affiliate\Core\Models\CommissionTier;
+use EDDA\Affiliate\Core\Models\CommissionTier;
 
 class Product
 {

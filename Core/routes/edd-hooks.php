@@ -3,9 +3,9 @@
 defined("ABSPATH") or exit;
 
 //All routes actions will be performed in Route::handleAuthRequest method.
-use RelayWp\Affiliate\Core\Controllers\Admin\HooksController\WooCommerce\CouponController;
-use RelayWp\Affiliate\Core\Controllers\Admin\HooksController\WooCommerce\EmailController;
-use RelayWp\Affiliate\Core\Controllers\Admin\HooksController\WooCommerce\OrderHook;
+use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\CouponController;
+use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\EmailController;
+use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\OrderHook;
 use RelayWp\Affiliate\Core\Controllers\StoreFront\AccountController;
 use RelayWp\Affiliate\Core\Controllers\StoreFront\CartController;
 use RelayWp\Affiliate\Core\Controllers\StoreFront\OrderPlacedController;
@@ -57,7 +57,7 @@ $admin_hooks = [
     ],
 
     'filters' => [
-        'woocommerce_email_classes' => ['callable' => [EmailController::class, 'addEmails'], 'priority' => 10, 'accepted_args' => 1],
+        'edd_email_templates' => ['callable' => [EmailController::class, 'addEmails'], 'priority' => 10, 'accepted_args' => 1],
         //        'woocommerce_coupon_error' => ['callable' => [CouponController::class, 'couponError'], 'priority' => 10, 'accepted_args' => 3],
         'views_edit-shop_coupon' => ['callable' => [CouponController::class, 'addCouponFilter'], 'priority' => 10, 'accepted_args' => 1],
         'woocommerce_order_query_args' => ['callable' => [OrderHook::class, 'filter_woocommerce_orders_for_hpos'], 'priority' => 99, 'accepted_args' => 1],

@@ -10,7 +10,7 @@ class WPHooks extends RegisterHooks
     {
         static::registerCoreHooks('wp-hooks.php');
 
-        if (rwpa_app()->get('is_pro_plugin')) {
+        if (eddApp()->get('is_pro_plugin')) {
             static::registerProHooks('wp-hooks.php');
         }
     }

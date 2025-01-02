@@ -4,17 +4,17 @@ namespace EDDA\Affiliate\App;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\PluginHelper;
-use RelayWp\Affiliate\App\Helpers\WordpressHelper;
-use RelayWp\Affiliate\App\Hooks\AdminHooks;
-use RelayWp\Affiliate\App\Hooks\AssetsActions;
-use RelayWp\Affiliate\App\Hooks\CustomHooks;
-use RelayWp\Affiliate\App\Hooks\WooCommerceHooks;
-use RelayWp\Affiliate\App\Hooks\WPHooks;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\PluginHelper;
+use EDDA\Affiliate\App\Helpers\WordpressHelper;
+use EDDA\Affiliate\App\Hooks\AdminHooks;
+use EDDA\Affiliate\App\Hooks\AssetsActions;
+use EDDA\Affiliate\App\Hooks\CustomHooks;
+use EDDA\Affiliate\App\Hooks\EddHooks;
+use EDDA\Affiliate\App\Hooks\WPHooks;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use RelayWp\Affiliate\App\Services\CustomRules;
+use EDDA\Affiliate\App\Services\CustomRules;
 
 class Route
 {
@@ -29,7 +29,7 @@ class Route
 
         AdminHooks::register();
         AssetsActions::register();
-        WooCommerceHooks::register();
+        EddHooks::register();
         CustomHooks::register();
         WPHooks::register();
     }
@@ -48,7 +48,7 @@ class Route
         $isAuthRoute = false;
         $handlers = require(PluginHelper::pluginRoutePath() . '/guest-api.php');
 
-        if (rwpa_app()->get('is_pro_plugin')) {
+        if (eddApp()->get('is_pro_plugin')) {
             $handlers = array_merge($handlers, require(PluginHelper::pluginRoutePath(true) . '/guest-api.php'));
         }
 
@@ -56,7 +56,7 @@ class Route
             //loading auth routes
             $handlers = PluginHelper::getAuthRoutes();
 
-            if (rwpa_app()->get('is_pro_plugin')) {
+            if (eddApp()->get('is_pro_plugin')) {
                 $handlers = array_merge($handlers, require(PluginHelper::pluginRoutePath(true) . '/auth-api.php'));
             }
 
@@ -90,7 +90,7 @@ class Route
         //loading guest routes
         $handlers = require(PluginHelper::pluginRoutePath() . '/guest-api.php');
 
-        if (rwpa_app()->get('is_pro_plugin')) {
+        if (eddApp()->get('is_pro_plugin')) {
             $handlers = array_merge($handlers, require(PluginHelper::pluginRoutePath(true) . '/guest-api.php'));
         }
 

@@ -4,7 +4,7 @@ namespace EDDA\Affiliate\App\Hooks;
 
 defined('ABSPATH') or exit;
 
-use RelayWp\Affiliate\App\Helpers\PluginHelper;
+use EDDA\Affiliate\App\Helpers\PluginHelper;
 
 class RegisterHooks
 {

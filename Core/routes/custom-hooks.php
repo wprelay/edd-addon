@@ -3,7 +3,7 @@
 defined("ABSPATH") or exit;
 
 use RelayWp\Affiliate\Core\Controllers\Admin\General\BackgroundJobController;
-use RelayWp\Affiliate\Core\Controllers\Admin\HooksController\WooCommerce\EmailController;
+use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\EmailController;
 use RelayWp\Affiliate\Core\Models\CommissionTier;
 use RelayWp\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;
@@ -32,13 +32,13 @@ $store_front_hooks = [
 
 $admin_hooks = [
     'actions' => [
-        'rwpa_send_affiliate_approved_email' => ['callable' => [EmailController::class, 'sendAffiliateApprovedEmail'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_send_affiliate_rejected_email' => ['callable' => [EmailController::class, 'sendAffiliateRejectedEmail'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_send_new_sale_made_email' => ['callable' => [EmailController::class, 'newSaleMadeEmail'], 'priority' => 10, 'accepted_args' => 2],
-        'rwpa_payment_processed_email' => ['callable' => [EmailController::class, 'paymentProcessedEmail'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_send_affiliate_registered_email' => ['callable' => [EmailController::class, 'affiliateRegisteredEmail'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_affiliate_commission_approved_email' => ['callable' => [EmailController::class, 'commissionApprovedEmail'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_affiliate_commission_rejected_email' => ['callable' => [EmailController::class, 'commissionRejectedEmail'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_send_affiliate_approved_email' => ['callable' => [EmailController::class, 'sendAffiliateApprovedEmail'], 'priority' => 5, 'accepted_args' => 1],
+        'rwpa_send_affiliate_rejected_email' => ['callable' => [EmailController::class, 'sendAffiliateRejectedEmail'], 'priority' => 5, 'accepted_args' => 1],
+        'rwpa_send_new_sale_made_email' => ['callable' => [EmailController::class, 'newSaleMadeEmail'], 'priority' => 5, 'accepted_args' => 2],
+        'rwpa_payment_processed_email' => ['callable' => [EmailController::class, 'paymentProcessedEmail'], 'priority' => 5, 'accepted_args' => 1],
+        'rwpa_send_affiliate_registered_email' => ['callable' => [EmailController::class, 'affiliateRegisteredEmail'], 'priority' => 5, 'accepted_args' => 1],
+        'rwpa_affiliate_commission_approved_email' => ['callable' => [EmailController::class, 'commissionApprovedEmail'], 'priority' => 5, 'accepted_args' => 1],
+        'rwpa_affiliate_commission_rejected_email' => ['callable' => [EmailController::class, 'commissionRejectedEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_update_affiliate_coupons' => ['callable' => [BackgroundJobController::class, 'updateAffiliateCoupons'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_enqueue_payments' => ['callable' => [BackgroundJobController::class, 'enqueuePayments'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_record_rwt_payment' => ['callable' => [RWPPayment::class, 'processPayment'], 'priority' => 10, 'accepted_args' => 2],
