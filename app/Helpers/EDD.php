@@ -11,7 +11,6 @@ class EDD
 {
     public static function saveDiscount($discountData, $discountId = null)
     {
-
         // Check if Easy Digital Downloads is active
         if (!function_exists('edd_add_discount')) {
             return false;
@@ -21,13 +20,15 @@ class EDD
         $data = [
             'name'              => $discountData['name'], // Discount name
             'code'              => $discountData['code'], // Discount code
+            'type'              => 'discount',
+            'description'       => $discountData['description'],
             'status'            => $discountData['status'] ?? 'active', // Default to active if not provided
-            'type'              => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
+            'amount_type'       => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
             'amount'            => $discountData['amount'], // Discount amount
-            'max_uses'          => $discountData['max_uses'] ?? null, // Max usage limit
+            'max_uses'          => $discountData['max_uses'] ?? 0, // Max usage limit
             'start'             => !empty($discountData['start_date']) ? $discountData['start_date'] : null,
             'expiration'        => !empty($discountData['end_date']) ? $discountData['expiry_date'] : null,
-            'min_price'         => $discountData['min_charge_amount'] ?? 0, // Minimum cart amount
+            'min_charge_amount' => $discountData['min_charge_amount'] ?? 0, // Minimum cart amount
             'product_reqs'      => $discountData['product_reqs'] ?? [], // Required products
             'once_per_customer' => $discountData['once_per_customer'] ?? 0,
             'product_condition' => 'all', // Use 'all' or 'any' based on your requirement

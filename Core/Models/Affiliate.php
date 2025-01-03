@@ -114,7 +114,9 @@ class Affiliate extends Model
     }
     public static function getEddDiscountData($affiliate, $program, $customerDiscount)
     {
+
         return [
+            'description'       => $program->description,
             'status'            => 'active', // Discount status
             'name'              => $program->title, // Use the program title as the discount name
             'code'              => $affiliate->referral_code, // Use the affiliate's referral code

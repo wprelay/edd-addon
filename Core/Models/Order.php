@@ -27,7 +27,6 @@ class Order extends Model
             $discount_codes = $order->discounts;
             $applied_coupons = array_filter(array_map('trim', explode(',', $discount_codes)));
         }
-        error_log(print_r($applied_coupons, true));
         $affiliate_coupons = AffiliateCoupon::query()->where("coupon in ('" . implode("','", $applied_coupons) . "')")->get();
 
         foreach ($affiliate_coupons ?? [] as $affiliate_coupon) {
@@ -99,7 +98,7 @@ class Order extends Model
             $medium = 'link';
 
         } elseif ($coupon_id = Order::havingAffiliateCoupon($order)) {
-            $referralCode = wc_get_coupon_code_by_id($coupon_id);
+            $referralCode = edd_get_discount_code($coupon_id);
             if (empty($referralCode)) {
                 return [];
             }
