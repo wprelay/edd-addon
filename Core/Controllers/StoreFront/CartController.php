@@ -1,16 +1,16 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Controllers\StoreFront;
+namespace EDDA\Affiliate\Core\Controllers\StoreFront;
 
 defined("ABSPATH") or exit;
 
 use Cartrabbit\Request\Request;
-use RelayWp\Affiliate\App\Helpers\WC;
-use RelayWp\Affiliate\App\Services\Settings;
-use RelayWp\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\AffiliateCoupon;
-use RelayWp\Affiliate\Core\Models\Customer;
-use RelayWp\Affiliate\Core\Models\CustomerDiscount;
+use EDDA\Affiliate\App\Helpers\EDD;
+use EDDA\Affiliate\App\Services\Settings;
+use EDDA\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\Core\Models\AffiliateCoupon;
+//use EDDA\Affiliate\Core\Models\Customer;
+use EDDA\Affiliate\Core\Models\CustomerDiscount;
 use RelayWp\Affiliate\Core\Models\Member;
 use RelayWp\Affiliate\Core\Models\Program;
 
@@ -18,27 +18,28 @@ class CartController
 {
     public static function applyAffiliateCouponIfNotApplied($cart)
     {
-        remove_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+        error_log('enetereddddddddddddddddddd this function');
+        remove_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
         $urlVariable = Settings::getAffiliateReferralURLVariable();
-
         if (empty($referral_id = Request::cookie($urlVariable))) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('enetereddddddddddddddddddd');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
-
         $affiliateReferralId = $referral_id;
 
         $affiliate = Affiliate::query()->findBy('referral_code', $affiliateReferralId);
 
         if (!$affiliate) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('enetereddddddddddddddddddd $affiliate');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
 
         $member = Member::query()->find($affiliate->member_id);
-
         if (!$member) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('$member enetereddddd');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
 
@@ -46,7 +47,8 @@ class CartController
         $customerDiscount = CustomerDiscount::query()->where("program_id = %d", [$program->id])->first();
 
         if (!Program::isValid($program) || empty($customerDiscount) || $customerDiscount->discount_type == 'no_discount') {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('Program::isValid($program) || empty($customerDiscount)');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
 
@@ -55,62 +57,52 @@ class CartController
             ->where("affiliate_id = %d", [$affiliate->id])
             ->where("deleted_at IS NULL")
             ->first();
-
         if (empty($affiliateCoupon)) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('$affiliateCoupon');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
 
         $coupon_id = $affiliateCoupon->woo_coupon_id;
 
-        $coupon_code = wc_get_coupon_code_by_id($coupon_id);
+        $coupon_code = edd_get_discount_code( $coupon_id );
 
         if (!$coupon_code) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('$coupon_code');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
-
-        $coupon = new \WC_Coupon($coupon_code);
-
+        $discount_id = edd_get_discount_id_by_code( $coupon_code );
+        $coupon =edd_get_discount($discount_id);
         if (!apply_filters('rwpa_coupon_is_valid', $coupon->is_valid())) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+            error_log('apply_filters');
+            add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
             return;
         }
 
-        $customer_removed_coupon = WC::getSession(\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::$customer_removed_coupon);
+        $customer_removed_coupon = EDD::getSession(\EDDA\Affiliate\Core\Controllers\StoreFront\CouponController::$customer_removed_coupon);
 
-        $customer = function_exists('WC') ? WC()->customer : null;
 
-        $billingEmail = null;
-
-        //Customer has session get the billing email and check whether the affiliate email and billing email are same
-        if ($customer) {
-            $billingEmail = $customer->get_billing_email();
-            $userEmail = $customer->get_email();
-            $isOwnAffiliate = static::isOwnAffiliateCoupon($member, $billingEmail) || static::isOwnAffiliateCoupon($member, $userEmail);
-        }
-
-        $applied_coupons = WC()->cart->get_applied_coupons() ?? [];
-
+        $applied_coupons = edd_get_cart_discounts();
         $applied_coupons = array_map(function ($item) {
             return strtolower($item);
         }, $applied_coupons);
 
 
-        if (!in_array(strtolower($coupon_code), $applied_coupons) && $customer_removed_coupon != $coupon_code && !$isOwnAffiliate) {
-            WC()->cart->apply_coupon($coupon_code);
+        if (!in_array(strtolower($coupon_code), $applied_coupons) && $customer_removed_coupon != $coupon_code ) {
+            error_log('edd_set_cart_discount');
+            edd_set_cart_discount($coupon_code);
         }
-
-        add_action('woocommerce_after_calculate_totals', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
+        add_action('edd_before_checkout_cart', [__CLASS__, 'applyAffiliateCouponIfNotApplied'], 10, 1);
     }
 
     public static function removeInvalidCoupons($cart)
     {
-        remove_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+        remove_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
         $urlVariable = Settings::getAffiliateReferralURLVariable();
 
         if (empty($referral_id = Request::cookie($urlVariable))) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+            add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
             return;
         }
 
@@ -118,7 +110,7 @@ class CartController
         $affiliate = Affiliate::query()->findBy('referral_code', $affiliateReferralId);
 
         if (!$affiliate) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+            add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
             return;
         }
 
@@ -132,7 +124,7 @@ class CartController
             ->first();
 
         if (empty($affiliateCoupon)) {
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+            add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
             return;
         }
 
@@ -143,42 +135,25 @@ class CartController
         $coupon_code = $affiliateCoupon->coupon;
 
         if (!Program::isValid($program)) {
-            WC()->cart->remove_coupon($coupon_code);
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+            error_log('edd_unset_cart_discount 1');
+            edd_unset_cart_discount( $coupon_code );
+            add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+            return;
+        }
+        $discount = edd_get_discount_by_code( $coupon_code );
+        if (in_array($coupon_code, edd_get_cart_discounts()) && !empty( $discount->id ) && $discount->is_valid()) {
+            error_log("unset cart discount...called");
+            edd_unset_cart_discount($coupon_code);
+            add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
             return;
         }
 
-        $customer = function_exists('WC') ? WC()->customer : null;
-
-        $billingEmail = null;
-
-        $isOwnAffiliateCoupon = false;
-
-        if (!empty($customer)) {
-            $billingEmail = $customer->get_billing_email();
-            $userEmail = $customer->get_email();
-            $isOwnAffiliateCoupon = static::isOwnAffiliateCoupon($member, $billingEmail) || static::isOwnAffiliateCoupon($member, $userEmail);
-        } else if (!empty(\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::$billing_email)) {
-            $billingEmail = \RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::$billing_email;
-            $isOwnAffiliateCoupon = static::isOwnAffiliateCoupon($member, $billingEmail);
-        }
-
-        if (in_array($coupon_code, WC()->cart->get_applied_coupons())) {
-            if ($isOwnAffiliateCoupon) {
-                WC()->cart->remove_coupon($coupon_code);
-            }
-
-            WC()->cart->calculate_totals();
-
-            add_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
-            return;
-        }
-
-        add_action('woocommerce_after_calculate_totals', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
+        add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
     }
 
     public static function isOwnAffiliateCoupon($member, $email)
     {
         return !empty($email) && $email == $member->email;
     }
+
 }

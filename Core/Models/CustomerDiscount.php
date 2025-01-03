@@ -1,13 +1,13 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Models;
+namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\WC;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\WC;
 use Cartrabbit\Request\Request;
-use RelayWp\Affiliate\App\Model;
+use EDDA\Affiliate\App\Model;
 
 class CustomerDiscount extends Model
 {

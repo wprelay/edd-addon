@@ -4,10 +4,10 @@ namespace EDDA\Affiliate\App;
 
 defined('ABSPATH') or exit;
 
-use RelayWp\Affiliate\App\Services\Database;
+use EDDA\Affiliate\App\Services\Database;
 use Cartrabbit\Request\Response;
-use RelayWp\Affiliate\App\Traits\Conditionable;
-use RelayWp\Affiliate\App\Traits\ForwardCalls;
+use EDDA\Affiliate\App\Traits\Conditionable;
+use EDDA\Affiliate\App\Traits\ForwardCalls;
 
 abstract class Model
 {

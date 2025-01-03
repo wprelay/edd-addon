@@ -7,7 +7,7 @@ use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\CouponController;
 use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\EmailController;
 use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\OrderHook;
 use RelayWp\Affiliate\Core\Controllers\StoreFront\AccountController;
-use RelayWp\Affiliate\Core\Controllers\StoreFront\CartController;
+use EDDA\Affiliate\Core\Controllers\StoreFront\CartController;
 use EDDA\Affiliate\Core\Controllers\StoreFront\OrderPlacedController;
 
 $store_front_hooks = [
@@ -16,7 +16,7 @@ $store_front_hooks = [
         'init' => ['callable' => [AccountController::class, 'registerAffiliateEndPoint'], 'priority' => 10, 'accepted_args' => 1],
 
         'woocommerce_checkout_update_order_meta' => ['callable' => [OrderPlacedController::class, 'orderCreated'], 'priority' => 10, 'accepted_args' => 2],
-        'edd_insert_payment' => ['callable' => [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'], 'priority' => 10, 'accepted_args' => 1],
+        'edd_insert_payment_custom' => ['callable' => [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'], 'priority' => 10, 'accepted_args' => 1],
         'woocommerce_order_status_changed' => ['callable' => [OrderPlacedController::class, 'orderStatusUpdated'], 'priority' => 10, 'accepted_args' => 1],
         'woocommerce_checkout_update_order_review' => ['callable' => [\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::class, 'getBillingEmail'], 'priority' => 10, 'accepted_args' => 1],
         'woocommerce_removed_coupon' => ['callable' => [\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::class, 'couponRemovedManually'], 'priority' => 10, 'accepted_args' => 1],
@@ -25,7 +25,7 @@ $store_front_hooks = [
         'woocommerce_add_to_cart' => ['callable' => [\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::class, 'clearCustomerRemovedCoupon'], 'priority' => 10, 'accepted_args' => 1],
         'woocommerce_remove_cart_item' => ['callable' => [\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::class, 'clearCustomerRemovedCoupon'], 'priority' => 10, 'accepted_args' => 1],
 
-        'woocommerce_after_calculate_totals' => function () {
+        'edd_before_checkout_cart' => function () {
             return [
                 ['callable' => [CartController::class, 'applyAffiliateCouponIfNotApplied'], 'priority' => 10, 'accepted_args' => 1],
                 ['callable' => [CartController::class, 'removeInvalidCoupons'], 'priority' => 11, 'accepted_args' => 1],

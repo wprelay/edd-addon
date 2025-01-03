@@ -34,7 +34,6 @@ class EDD
             'excluded_products' => $discountData['excluded_products'] ?? [],
             'scope'             => $discountData['scope'] // Excluded products
         ];
-
         // Update existing discount or create a new one
         $discount_id = edd_add_discount($data);
 

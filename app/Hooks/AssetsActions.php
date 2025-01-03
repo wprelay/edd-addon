@@ -53,7 +53,7 @@ class AssetsActions
 
         $affiliate_variable_is_present = !empty($request->get($variableName));
 
-        if ($affiliate_variable_is_present || defined('WC_VERSION') ? is_checkout() : true) {
+        if ($affiliate_variable_is_present) {
             $resourceUrl = AssetHelper::getResourceURL();
             $storeConfig = AssetsActions::getStoreConfigValues();
 

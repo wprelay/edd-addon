@@ -1,13 +1,13 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Controllers\StoreFront;
+namespace EDDA\Affiliate\Core\Controllers\StoreFront;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\WC;
-use RelayWp\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\Member;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\EDD;
+use EDDA\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\Core\Models\Member;
 
 class CouponController
 {
@@ -46,7 +46,8 @@ class CouponController
     {
         $affiliate = Affiliate::query()->where('referral_code = %s', [$coupon_code])->first();
 
-        $coupon = new \WC_Coupon($coupon_code);
+        $discount_id = edd_get_discount_id_by_code( $coupon_code );
+        $coupon =edd_get_discount($discount_id);
 
         if (!$coupon->is_valid()) {
             return;
@@ -55,11 +56,11 @@ class CouponController
         if (empty($affiliate)) {
             return;
         }
-        WC::setSession(static::$customer_removed_coupon, $coupon_code);
+        EDD::setSession(static::$customer_removed_coupon, $coupon_code);
     }
 
     public static function clearCustomerRemovedCoupon($hook)
     {
-        WC::setSession(static::$customer_removed_coupon, null);
+        EDD::setSession(static::$customer_removed_coupon, null);
     }
 }
