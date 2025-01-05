@@ -9,13 +9,15 @@ use EDDA\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
 use RelayWp\Affiliate\Core\Models\CommissionEarning;
 use RelayWp\Affiliate\Core\Models\CommissionTier;
-use RelayWp\Affiliate\Core\Models\Customer;
-use RelayWp\Affiliate\Core\Models\Member;
-use RelayWp\Affiliate\Core\Models\Order;
+use EDDA\Affiliate\Core\Models\Customer;
+use EDDA\Affiliate\Core\Models\Member;
+use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Product;
 use RelayWp\Affiliate\Core\Models\Program;
 //use Relaywp\Affiliate\Core\Models\Rules;
 use RelayWp\Affiliate\Core\Models\Transaction;
+use EDD_Customer;
+use EDD_Payment;
 
 class OrderPlacedController
 {
@@ -33,14 +35,12 @@ class OrderPlacedController
     {
         $order = edd_get_order($order_id);
         $track_order_data = apply_filters('rwpa_edd_track_affiliate_order', [], $order);
-
         if (empty($track_order_data)) {
             return false;
         }
 
         $affiliate = $track_order_data['affiliate'];
         $medium = $track_order_data['medium'];
-
         if (empty($affiliate)) {
             return;
         }
@@ -56,9 +56,7 @@ class OrderPlacedController
         if (!Program::isValid($program)) {
             return;
         }
-
-        $billingEmail = $order->get_billing_email();
-
+        $billingEmail = $order->email;
         $member = Member::query()->find($affiliate->member_id);
 
         if (empty($member)) return;
@@ -72,24 +70,23 @@ class OrderPlacedController
 
         $meta_value = $affiliate->referral_code;
 
-        $order_id = $order->get_id();
+        $order_id = $order->id;
 
-        $order->update_meta_data($meta_key, $meta_value);
+        edd_update_payment_meta($order_id, $meta_key, $meta_value);
         //        update_post_meta($order_id, );
-        $order->update_meta_data(Affiliate::ORDER_FROM_META_KEY, $medium);
+        edd_update_payment_meta($order_id, Affiliate::ORDER_FROM_META_KEY, $medium);
 
-        $order->update_meta_data(Affiliate::ORDER_AFFILIATE_FOR, $affiliate->id);
-        $order->update_meta_data(Affiliate::ORDER_AFFILIATE_SESSION_EMIL, $order->get_billing_email());
+        edd_update_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_FOR, $affiliate->id);
+
+        edd_update_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_SESSION_EMIL, $order->email);
 
         if ($medium == 'recurring' && isset($track_order_data['recurring_order_from']) && is_object($track_order_data['recurring_order_from'])) {
-            $order->update_meta_data(Affiliate::ORDER_RECURRING_ID, $track_order_data['recurring_order_from']->id);
+            edd_update_payment_meta($order_id,Affiliate::ORDER_RECURRING_ID, $track_order_data['recurring_order_from']->id);
         }
-        $order->save_meta_data();
         $member = Member::query()->find($affiliate->member_id);
-
         $new_sale_made_email = apply_filters('rwpa_affiliate_new_sale_made_email_enabled', Settings::get('email_settings.admin_emails.affiliate_sale_made'));
-
-
+        $customer_id=$order->customer_id;
+        $customer = new EDD_Customer($customer_id);
         if ($new_sale_made_email) {
             do_action('rwpa_send_new_sale_made_email', [
                 'first_name' => $member->first_name,
@@ -97,27 +94,23 @@ class OrderPlacedController
                 'email' => $member->email,
                 'referral_code' => $affiliate->referral_code,
                 'referral_link' => Affiliate::getReferralCodeURL($affiliate),
-                'customer_name' => $order->get_formatted_billing_full_name(),
-                'customer_email' => $order->get_billing_email(),
-                'order_amount' => $order->get_total(),
-                'order_created_at' => $order->get_date_created()
+                'customer_name' => $customer->name,
+                'customer_email' => $customer->email,
+                'order_amount' => $order->total,
+                'order_created_at' => $order->date_created
             ], $order_id);
         }
     }
 
 
-    public static function orderStatusUpdated($order_id)
+    public static function orderStatusUpdated($order_id,$new_status, $old_status)
     {
-
-        $order = wc_get_order($order_id);
-
-        $session_email = $order->get_meta(Affiliate::ORDER_AFFILIATE_SESSION_EMIL, true);
-
-        if ($session_email != $order->get_billing_email()) {
+        $order = edd_get_order($order_id);
+        $session_email = edd_get_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_SESSION_EMIL, true);
+        if ($session_email != $order->email) {
             return;
         }
-
-        $affiliateReferralCode = $order->get_meta(Affiliate::AFFILIATE_META_KEY_FOR_ORDER, true);
+        $affiliateReferralCode = edd_get_payment_meta($order_id, Affiliate::AFFILIATE_META_KEY_FOR_ORDER, true);
 
         if (!$affiliateReferralCode) {
             return;
@@ -128,15 +121,15 @@ class OrderPlacedController
         if (empty($affiliate)) {
             return;
         }
-
-        $status = $order->get_status();
+        $payment = new EDD_Payment($order_id);
+        $status = $payment->status;
 
         $successful_order_statuses = Settings::get('affiliate_settings.successful_order_status');
         $failure_order_statues = Settings::get('affiliate_settings.failure_order_status');
 
         $program = Program::query()->find($affiliate->program_id);
 
-        $order_already_exists = Order::query()->where('woo_order_id = %s', [$order->get_id()])->first();
+        $order_already_exists = Order::query()->where('woo_order_id = %s', [$order->id])->first();
 
         if (!Program::isValid($program) && empty($order_already_exists)) {
             return;
@@ -232,11 +225,11 @@ class OrderPlacedController
     }
 
 
-    private static function captureOrder(\WC_Order $order, $affiliate)
+    private static function captureOrder($order, $affiliate)
     {
         $relayWpMember = Member::query()
             ->where("type = %s", ['customer'])
-            ->where("email = %s", [$order->get_billing_email()])
+            ->where("email = %s", [$order->email])
             ->first();
 
         $relayWpMemberId = empty($relayWpMember) ? Member::createMemberFromOrder($order) : $relayWpMember->id;

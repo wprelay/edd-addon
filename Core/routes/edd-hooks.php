@@ -3,6 +3,7 @@
 defined("ABSPATH") or exit;
 
 //All routes actions will be performed in Route::handleAuthRequest method.
+use  EDDA\Affiliate\App\Helpers\EDD;
 use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\CouponController;
 use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\EmailController;
 use EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD\OrderHook;
@@ -17,7 +18,7 @@ $store_front_hooks = [
 
         'woocommerce_checkout_update_order_meta' => ['callable' => [OrderPlacedController::class, 'orderCreated'], 'priority' => 10, 'accepted_args' => 2],
         'edd_insert_payment_custom' => ['callable' => [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'], 'priority' => 10, 'accepted_args' => 1],
-        'woocommerce_order_status_changed' => ['callable' => [OrderPlacedController::class, 'orderStatusUpdated'], 'priority' => 10, 'accepted_args' => 1],
+        'edd_update_payment_status' => ['callable' => [OrderPlacedController::class, 'orderStatusUpdated'], 'priority' => 10, 'accepted_args' => 3],
         'woocommerce_checkout_update_order_review' => ['callable' => [\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::class, 'getBillingEmail'], 'priority' => 10, 'accepted_args' => 1],
         'woocommerce_removed_coupon' => ['callable' => [\RelayWp\Affiliate\Core\Controllers\StoreFront\CouponController::class, 'couponRemovedManually'], 'priority' => 10, 'accepted_args' => 1],
 
@@ -38,6 +39,7 @@ $store_front_hooks = [
 
     'filters' => [
         'woocommerce_account_menu_items' => ['callable' => [AccountController::class, 'addAffiliateMenu'], 'priority' => 10, 'accepted_args' => 1],
+        'edd_currency_symbol' => ['callable' => [EDD::class, 'getCurrencySymbol'], 'priority' => 10, 'accepted_args' => 2]
     ],
 ];
 

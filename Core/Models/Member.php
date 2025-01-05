@@ -4,8 +4,8 @@ namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Model;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Model;
 
 class Member extends Model
 {
@@ -35,9 +35,9 @@ class Member extends Model
     public static function createMemberFromOrder($order)
     {
 
-        $firstName = $order->get_billing_first_name();
-        $lastName = $order->get_billing_last_name();
-        $billingEmail = $order->get_billing_email();
+        $firstName = $order->first_name;
+        $lastName = $order->last_name;
+        $billingEmail = $order->email;
 
 
         $insertedRows = self::query()->create([

@@ -7,10 +7,10 @@ defined("ABSPATH") or exit;
 use Error;
 use Exception;
 use RelayWp\Affiliate\App\Exception\ModelNotFoundException;
-use RelayWp\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\Functions;
 use RelayWp\Affiliate\App\Helpers\PluginHelper;
-use RelayWp\Affiliate\App\Helpers\WC;
-use RelayWp\Affiliate\App\Helpers\WordpressHelper;
+use EDDA\Affiliate\App\Helpers\EDD;
+use EDDA\Affiliate\App\Helpers\WordpressHelper;
 use RelayWp\Affiliate\App\Route;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateCollection;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateCommissionCollection;
@@ -20,16 +20,16 @@ use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateSelectInfoCollection;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateTransactionCollection;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateProfileResource;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateSalesCollection;
-use RelayWp\Affiliate\App\Services\Database;
+use EDDA\Affiliate\App\Services\Database;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use RelayWp\Affiliate\App\Services\Settings;
-use RelayWp\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\AffiliateCoupon;
+use EDDA\Affiliate\App\Services\Settings;
+use EDDA\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\Core\Models\AffiliateCoupon;
 use RelayWp\Affiliate\Core\Models\CommissionEarning;
 use RelayWp\Affiliate\Core\Models\CommissionTier;
 use RelayWp\Affiliate\Core\Models\Customer;
-use RelayWp\Affiliate\Core\Models\Member;
+use EDDA\Affiliate\Core\Models\Member;
 use RelayWp\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;
 use RelayWp\Affiliate\Core\Models\Program;
@@ -272,7 +272,7 @@ class AffiliateController
 
             if (is_null($affiliate->referral_code)) {
                 $coupon_code = WordpressHelper::generateRandomString(12);
-                $is_coupon_exists = WC::isCouponExists($coupon_code);
+                $is_coupon_exists = EDD::isCouponExists($coupon_code);
                 if (is_bool($is_coupon_exists) && !$is_coupon_exists) {
                     $affiliateData['referral_code'] = $coupon_code;
                 }
@@ -294,7 +294,7 @@ class AffiliateController
             }
 
             if ($createWCAccount && $createWCAccount != 'false' && empty($affiliate->wc_customer_id)) {
-                $user_id = !defined('WC_VERSION') ? Affiliate::createWCAccount($member, $affiliate) : apply_filters('rwpa_create_account', $member, $affiliate);
+                $user_id = !defined('WC_VERSION') ? Affiliate::createWPAccount($member, $affiliate) : apply_filters('rwpa_create_account', $member, $affiliate);
                 if (!empty($user_id)) {
                     $wp_user_id = $user_id;
                     $affiliateData['wp_customer_id'] = $wp_user_id;

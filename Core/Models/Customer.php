@@ -1,11 +1,11 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Models;
+namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Model;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Model;
 
 class Customer extends Model
 {
@@ -35,14 +35,14 @@ class Customer extends Model
         ) {$charset};";
     }
 
-    public static function createCustomer(\WC_Order $order, $affiliate, $memberId)
+    public static function createCustomer( $order, $affiliate, $memberId)
     {
         $insertedRows = Customer::query()->create([
             'member_id' => $memberId,
-            'woo_customer_id' => $order->get_customer_id(),
+            'woo_customer_id' => $order->customer_id,
             'affiliate_id' => $affiliate->id,
             'program_id' => $affiliate->program_id,
-            'billing_email' => $order->get_billing_email(),
+            'billing_email' => $order->email,
             'created_at' => Functions::currentUTCTime(),
             'updated_at' => Functions::currentUTCTime(),
         ]);

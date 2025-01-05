@@ -15,7 +15,30 @@ class Order extends Model
 
     public function createTable()
     {
+        $charset = static::getCharSetCollate();
+        $table = static::getTableName();
 
+        $affiliateTable = Affiliate::getTableName();
+        $customerTable = Customer::getTableName();
+
+        return "CREATE TABLE {$table} (
+                id  BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+                customer_id  BIGINT UNSIGNED          DEFAULT NULL,
+                affiliate_id BIGINT UNSIGNED,
+                program_id BIGINT UNSIGNED,
+                woo_order_id BIGINT UNSIGNED,
+                currency     VARCHAR(255)        NOT NULL,
+                order_status     VARCHAR(255)        NOT NULL,
+                total_amount DECIMAL(15, 2),
+                calculated_total_amount DECIMAL(15, 2),
+                recurring_parent_id BIGINT UNSIGNED NULL,
+                medium VARCHAR(255) default 'link',
+                ordered_at   TIMESTAMP,
+                created_at   TIMESTAMP           NOT NULL DEFAULT current_timestamp(),
+                updated_at   TIMESTAMP           NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+                deleted_at timestamp NULL,
+                PRIMARY KEY (id)
+            ) {$charset};";
     }
 
     public static function havingAffiliateCoupon( $order)
@@ -36,24 +59,24 @@ class Order extends Model
         return false;
     }
 
-    public static function createOrder(\WC_Order $order, $relayWpCustomerId, $affiliate)
+    public static function createOrder($order, $relayWpCustomerId, $affiliate)
     {
-        $medium = $order->get_meta(Affiliate::ORDER_FROM_META_KEY);
-        $recurring_order_id = $order->get_meta(Affiliate::ORDER_RECURRING_ID, true);
+        $medium = $order->edd_get_payment_meta(Affiliate::ORDER_FROM_META_KEY);
+        $recurring_order_id = $order->edd_get_payment_meta(Affiliate::ORDER_RECURRING_ID, true);
         $totalPrice = EDD::getTotalPrice($order);
         //create order if already not created
         $insertedRows = Order::query()->create([
-            'woo_order_id' => $order->get_id(),
+            'woo_order_id' => $order->id,
             'customer_id' => $relayWpCustomerId,
             'affiliate_id' => $affiliate->id,
             'program_id' => $affiliate->program_id,
-            'currency' => $order->get_currency(),
-            'total_amount' => $order->get_total(),
+            'currency' => $order->currency,
+            'total_amount' => $order->total,
             'calculated_total_amount' => $totalPrice,
             'medium' => $medium ?? 'link',
             'recurring_parent_id' => $recurring_order_id ?: null,
-            'ordered_at' => Functions::getWcTime($order->get_date_created()->format('Y-m-d h:i:s')),
-            'order_status' => $order->get_status(),
+            'ordered_at' => Functions::getEDDTime($order->date_created->format('Y-m-d h:i:s')),
+            'order_status' => $order->status,
             'created_at' => Functions::currentUTCTime(),
             'updated_at' => Functions::currentUTCTime(),
         ]);
@@ -65,15 +88,15 @@ class Order extends Model
         return false;
     }
 
-    public static function updateOrder(\WC_Order $order, $relayWpOrder)
+    public static function updateOrder($order, $relayWpOrder)
     {
         $totalPrice = EDD::getTotalPrice($order);
         //create order if already not created
         $rowsUpdated = Order::query()->update([
-            'woo_order_id' => $order->get_id(),
-            'currency' => $order->get_currency(),
+            'woo_order_id' => $order->id,
+            'currency' => $order->currency,
             'total_amount' => $totalPrice,
-            'order_status' => $order->get_status(),
+            'order_status' => $order->status,
             'updated_at' => Functions::currentUTCTime(),
         ], ['id' => $relayWpOrder->id]);
 
@@ -116,8 +139,7 @@ class Order extends Model
 
         //If the $affiliate present it should not have Previous order to track here. if it has previous order that means this order is may recursive,
         // it will handled separately.
-
-        $email = $order->get_billing_email();
+        $email = $order->email;
         $member = Member::query()
             ->where("email = %s", [$email])
             ->where("type = %s", ['customer'])

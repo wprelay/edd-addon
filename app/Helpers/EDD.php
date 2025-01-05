@@ -156,9 +156,8 @@ class EDD
     public static function getEDDCurrencySymbol($currencyCode = '')
     {
         if (empty($currencyCode) && function_exists('edd_get_currency')) {
-            $currencyCode = edd_get_currency();
+            $currency = edd_currency_symbol($currencyCode);
         }
-        $currency = edd_currency_symbol($currencyCode);
         return html_entity_decode($currency);
     }
 
@@ -201,21 +200,20 @@ class EDD
         return $applied_coupons;
     }
 
-    public static function getTotalPrice(\WC_Order $order)
+    public static function getTotalPrice($order)
     {
         $excludeShipping = (bool)Settings::get('general_settings.commission_settings.exclude_shipping', false);
         $excludeTaxes = (bool)Settings::get('general_settings.commission_settings.exclude_taxes', false);
 
         //with tax and with shipping
-        $orderTotal = $order->get_total();
+        $orderTotal = $order->total;
 
         if ($excludeTaxes) {
-            $orderTotal -= $order->get_total_tax();
+            $orderTotal -= $order->tax;
         }
 
         if ($excludeShipping) {
-            $orderTotal -= $order->get_shipping_total();
-            $orderTotal -= $order->get_shipping_tax();
+            return;
         }
 
         return apply_filters('rwpa_get_total_price_of_the_order', $orderTotal);
@@ -295,8 +293,7 @@ class EDD
         if (function_exists('edd_currency_symbol')) {
             return html_entity_decode(edd_currency_symbol($code));
         }
-
-        return '$'; // Default to USD if EDD is not active or the function does not exist
+        return '$';
     }
 
     public static function getCurrencyList()
@@ -333,5 +330,94 @@ class EDD
             return true;
         }
         return false;
+    }
+    public static function getCurrencySymbol($symbol,$code){
+        switch ( $code ) {
+            case "GBP" :
+                $symbol = '&pound;';
+                break;
+            case "BRL" :
+                $symbol = 'R&#36;';
+                break;
+            case "EUR" :
+                $symbol = '&euro;';
+                break;
+            case 'USD': // US Dollar
+                $symbol = '&#36;'; // $
+                break;
+            case 'AUD': // Australian Dollar
+                $symbol = 'A&#36;'; // A$
+                break;
+            case 'NZD': // New Zealand Dollar
+                $symbol = 'NZ&#36;'; // NZ$
+                break;
+            case 'CAD': // Canadian Dollar
+                $symbol = 'C&#36;'; // C$
+                break;
+            case 'HKD': // Hong Kong Dollar
+                $symbol = 'HK&#36;'; // HK$
+                break;
+            case 'MXN': // Mexican Peso
+                $symbol = 'MX&#36;'; // MX$
+                break;
+            case 'SGD': // Singapore Dollar
+                $symbol = 'S&#36;'; // S$
+                break;
+            case 'CZK': // Czech Koruna
+                $symbol = 'Kč';
+                break;
+            case 'DKK': // Danish Krone
+                $symbol = 'kr';
+                break;
+            case 'HUF': // Hungarian Forint
+                $symbol = 'Ft';
+                break;
+            case 'ILS': // Israeli Shekel
+                $symbol = '&#8362;'; // ₪
+                break;
+            case 'MYR': // Malaysian Ringgit
+                $symbol = 'RM';
+                break;
+            case 'NOK': // Norwegian Krone
+                $symbol = 'kr';
+                break;
+            case 'PHP': // Philippine Peso
+                $symbol = '₱';
+                break;
+            case 'PLN': // Polish Zloty
+                $symbol = 'zł';
+                break;
+            case 'SEK': // Swedish Krona
+                $symbol = 'kr';
+                break;
+            case 'CHF': // Swiss Franc
+                $symbol = 'CHF';
+                break;
+            case 'TWD': // Taiwan New Dollar
+                $symbol = 'NT$';
+                break;
+            case 'THB': // Thai Baht
+                $symbol = '&#3647;'; // ฿
+                break;
+            case 'INR': // Indian Rupee
+                $symbol = '&#8377;'; // ₹
+                break;
+            case 'TRY': // Turkish Lira
+                $symbol = '&#8378;'; // ₺
+                break;
+            case 'RUB': // Russian Ruble
+                $symbol = '&#8381;'; // ₽
+                break;
+            case "JPY" :
+                $symbol = '&yen;';
+                break;
+            case "AOA" :
+                $symbol = 'Kz';
+                break;
+            default:
+                $symbol = $code; // Fallback to currency code if no match
+                break;
+        }
+        return $symbol;
     }
 }

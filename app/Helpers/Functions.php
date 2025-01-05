@@ -68,7 +68,7 @@ class Functions
         return wp_date($format, $date->getTimestamp(), new DateTimeZone('UTC'));
     }
 
-    public static function getWcTime($datetime, $format = 'Y-m-d H:i:s')
+    public static function getEDDTime($datetime, $format = 'Y-m-d H:i:s')
     {
         return Functions::utcToWPTime($datetime, $format);
     }

@@ -11,7 +11,9 @@ use EDDA\Affiliate\App\Helpers\WordpressHelper;
 use Cartrabbit\Request\Request;
 use EDDA\Affiliate\App\Model;
 use EDDA\Affiliate\App\Services\Settings;
-
+use EDD_Customer;
+use WP_User;
+use WP_Error;
 class Affiliate extends Model
 {
     protected static $table = 'affiliates';
@@ -147,7 +149,7 @@ class Affiliate extends Model
         }
         return 'flat';
     }
-    /*public static function updateCoupon($affiliate, $program, $customerDiscount)
+    public static function updateCoupon($affiliate, $program, $customerDiscount)
     {
         $affiliateCoupon = AffiliateCoupon::query()
             ->where('affiliate_id = %s', [$affiliate->id])
@@ -157,21 +159,21 @@ class Affiliate extends Model
 
         if (empty($affiliateCoupon)) return false;
 
-        $couponData = static::getWooCommerceCouponData($affiliate, $program, $customerDiscount);
-        $coupon_code = wc_get_coupon_code_by_id($affiliateCoupon->woo_coupon_id);
+        $couponData = static::getEddDiscountData($affiliate, $program, $customerDiscount);
+        $coupon_code = edd_get_discount_code($affiliateCoupon->woo_coupon_id);
 
-        $coupon = new \WC_Coupon($coupon_code);
+        $coupon = edd_get_discount_by_code($coupon_code);
 
-        $couponId = WC::saveCoupon($couponData, $coupon);
+        $couponId = EDD::saveDiscount($couponData, $coupon);
 
 
-        $data = AffiliateCoupon::getCouponData($coupon);
+        $data = AffiliateCoupon::getDiscountData($coupon);
 
         AffiliateCoupon::query()->update(array_merge($data, [
             'affiliate_id' => $affiliate->id,
             'updated_at' => Functions::currentUTCTime()
         ]), ['id' => $affiliateCoupon->id]);
-    }*/
+    }
 
     /*public static function setShippingAddress($data)
     {
@@ -239,44 +241,33 @@ class Affiliate extends Model
         return $links;
     }
 
-    /*public static function createWCAccount($member, $affiliate)
+    public static function createWPAccount($member, $affiliate)
     {
         try {
-
             $parts = explode("@", $member->email);
+            $username= $parts[0];
+            $password = WordpressHelper::generateRandomPassword(10);
+            if ( username_exists( $username ) || email_exists( $member->email ) ) {
+                return new WP_Error( 'user_exists', 'User with that username or email already exists.' );
+            }
 
-            $username = $parts[0];
-
-            $user_data = array(
-                'user_login' => $username . $affiliate->id,  // The user's username
-                'user_pass' => WordpressHelper::generateRandomPassword(10), // The user's password
+            $userdata = [
+                'user_login' => $username,
+                'user_pass'  => $password,
                 'user_email' => $member->email,
-                'role' => 'customer', // Assign the role of 'customer'
                 'first_name' => $member->first_name,
-                'last_name' => $member->last_name
-            );
-
-            if (email_exists($member->email)) {
-                return false;
-            }
-
-            $user_id = wc_create_new_customer($user_data['user_email'], $user_data['user_login'], $user_data['user_pass'], $user_data);
-
-            if (!is_wp_error($user_id)) {
-                // Set the role of the user to 'customer'
-                $customer = new \WC_Customer($user_id);
-                $customer->set_role('customer');
-                $customer->set_role('affiliate');
+                'last_name'  => $member->last_name,
+                'role'       => 'shop_worker', // Set default role
+            ];
+            $user_id = wp_insert_user($userdata);
+            if ( is_wp_error( $user_id ) ) {
                 return $user_id;
-            } else {
-                //code
             }
-
-            return false;
+            return $user_id;
         } catch (\Error $error) {
             return false;
         }
-    }*/
+    }
 
     public static function isAffiliateApproved($status): bool
     {
