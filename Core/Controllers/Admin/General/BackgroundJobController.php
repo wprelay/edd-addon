@@ -5,10 +5,10 @@ namespace EDDA\Affiliate\Core\Controllers\Admin\General;
 defined("ABSPATH") or exit;
 
 use EDDA\Affiliate\App\Helpers\Functions;
-use EDDA\Affiliate\App\Services\Settings;
+use RelayWp\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
 use RelayWp\Affiliate\Core\Models\CommissionEarning;
-use EDDA\Affiliate\Core\Models\CustomerDiscount;
+use RelayWp\Affiliate\Core\Models\CustomerDiscount;
 use EDDA\Affiliate\Core\Models\Member;
 use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;

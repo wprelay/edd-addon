@@ -6,16 +6,16 @@ defined("ABSPATH") or exit;
 
 use Error;
 use Exception;
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\PluginHelper;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\PluginHelper;
 use RelayWp\Affiliate\Core\Resources\Affiliate\CommissionBalanceResource;
 use RelayWp\Affiliate\App\Services\Database;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
 use RelayWp\Affiliate\App\Services\Settings;
-use RelayWp\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\CommissionEarning;
-use RelayWp\Affiliate\Core\Models\Member;
+use EDDA\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\Core\Models\CommissionEarning;
+use EDDA\Affiliate\Core\Models\Member;
 use RelayWp\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;
 use RelayWp\Affiliate\Core\Models\Transaction;
@@ -25,7 +25,6 @@ class CommissionController
     public function updateStatus(Request $request)
     {
         Database::beginTransaction();
-
         try {
             $commissionStatus = $request->get('status');
             $commissionId = $request->get('commission_id');

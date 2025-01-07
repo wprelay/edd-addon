@@ -16,6 +16,8 @@ use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\Core\Models\Affiliate;
 use EDDA\Affiliate\Core\Controllers\Admin\EDDController;
 use EDDA\Affiliate\Core\Controllers\Api\AffiliateController;
+use EDDA\Affiliate\Core\Controllers\Api\CommissionController;
+use EDDA\Affiliate\Core\Controllers\Api\PayoutController;
 $store_front_hooks = [
     'actions' => [
         'rwpa_auto_approve_commission' => ['callable' => [BackgroundJobController::class, 'autoApproveCommission'], 'priority' => 9, 'accepted_args' => 1],
@@ -33,14 +35,23 @@ $store_front_hooks = [
 
         'rwpa_get_default_currency' => ['callable' => [EDD::class, 'getDefaultCurrency'], 'priority' => 11, 'accepted_args' => 0],
         'rwpa_get_currency_list' => ['callable' => [EDD::class, 'getCurrencyList'], 'priority' => 11, 'accepted_args' => 0],
-        'rwpa_get_currency_symbol' => ['callable' => [EDD::class, 'getEDDCurrencySymbol'], 'priority' => 11, 'accepted_args' => 1],
+        'rwpa_get_currency_symbol' => ['callable' => [EDD::class, 'getEDDCurrencySymbol'], 'priority' => 11, 'accepted_args' => 0],
         'rwpa_get_currency_symbol_with_code' => ['callable' => [EDD::class, 'getEDDCurrencySymbolCode'], 'priority' => 11, 'accepted_args' => 1],
         'rwpa_format_amount' => ['callable' => [Functions::class, 'formatAmount'], 'priority' => 20, 'accepted_args' => 2],
         'rwpa_create_coupon' => ['callable' => [Affiliate::class, 'createCoupon'], 'priority' => 5, 'accepted_args' => 2],
         'edda_search_product_list' => ['callable' => [EDDController::class, 'getProductsList'], 'priority' => 10, 'accepted_args' => 1],
         'edda_search_categories_list' => ['callable' => [EDDController::class, 'getCategoriesList'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_edd_update_status' => ['callable' => [AffiliateController::class, 'updateStatus'], 'priority' => 10, 'accepted_args' => 1],
-
+        'affiliate_edd_sales' => ['callable' => [AffiliateController::class, 'sales'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_update_commision_status' => ['callable' => [CommissionController::class, 'updateStatus'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_edd_payouts' => ['callable' => [AffiliateController::class, 'payouts'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_edd_record_payout' => ['callable' => [PayoutController::class, 'recordPayout'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_set_session' => ['callable' => [EDD::class, 'setSession'], 'priority' => 8, 'accepted_args' => 2],
+        'rwpa_get_session' => ['callable' => [EDD::class, 'getSession'], 'priority' => 8, 'accepted_args' => 2],
+        'rwpa_get_edd_countries' => ['callable' => [EDD::class, 'getEDDCountries'], 'priority' => 10, 'accepted_args' => 0],
+        'rwpa_get_search_countries' => ['callable' => [EDDController::class, 'getSearchEDDCountries'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_get_search_states' => ['callable' => [EDDController::class, 'getSearchEDDStates'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_edd_get_order_status' => ['callable' => [EDD::class, 'getOrderStatusSettings'], 'priority' => 10, 'accepted_args' => 1]
     ]
 ];
 

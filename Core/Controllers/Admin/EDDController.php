@@ -6,7 +6,7 @@ defined("ABSPATH") or exit;
 
 use Error;
 use RelayWp\Affiliate\App\Helpers\PluginHelper;
-use RelayWp\Affiliate\App\Helpers\WC;
+use EDDA\Affiliate\App\Helpers\EDD;
 use RelayWp\Affiliate\Core\Resources\WC\CountryCollection;
 use RelayWp\Affiliate\Core\Resources\WC\StateCollection;
 use Cartrabbit\Request\Request;
@@ -16,13 +16,14 @@ use WC_Product_Query;
 
 class EDDController
 {
-    public static function getWcCountries(Request $request)
+    public static function getSearchEDDCountries(Request $request)
     {
+        error_log("enetered in getSearchEDDCountries");
         try {
             $search_term = $request->get('search');
 
-            $countries = WC()->countries->get_countries();
-            if (!is_array($countries) && empty($values) && !is_string($search_term) && empty($search_term)) {
+            $countries = edd_get_country_list();
+            if (!is_array($countries) || empty($countries) || !is_string($search_term) || empty($search_term)) {
                 return [];
             }
 
@@ -32,30 +33,35 @@ class EDDController
 
             $countries = array_values($countries);
 
-            // Output the country names
+            // Wrap the country names in a collection for response
             return CountryCollection::collection([$countries]);
-        } catch (\Exception | Error $exception) {
+        } catch (\Exception | \Error $exception) {
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());
         }
     }
 
-    public static function getWcStates(Request $request)
+    public static function getSearchEddStates(Request $request)
     {
         try {
             $search_term = $request->get('search', '');
-
             $store_front = $request->get('store_front', false);
+            $country_code = $request->get('country_code');
 
-            $states = WC::getStates($request->get('country_code'));
-            if (!is_array($states) && empty($values)) {
+            // Get states for the country
+            $states = EDD::getStates($country_code);
+
+            // Validate the states result
+            if (!is_array($states) || empty($states)) {
                 return [];
             }
 
-            if (!$store_front && !is_string($search_term) && empty($search_term)) {
+            // If not on storefront and no search term, return an empty array
+            if (!$store_front && (!is_string($search_term) || empty($search_term))) {
                 return [];
             }
 
+            // Filter states based on the search term
             if (!empty($search_term)) {
                 $states = array_filter($states, function ($value) use ($search_term) {
                     return strpos(strtolower($value), strtolower($search_term)) !== false;
@@ -64,13 +70,14 @@ class EDDController
 
             $states = array_values($states);
 
-            // Output the country names
+            // Output the states
             return StateCollection::collection([$states]);
-        } catch (\Exception | Error $exception) {
+        } catch (\Exception | \Error $exception) {
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());
         }
     }
+
 
     public static function getProductsList(Request $request)
     {

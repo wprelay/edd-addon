@@ -19,16 +19,15 @@ class AffiliateRejectedEmail extends EDD_Emails
         $this->customer_email = true;
         $this->heading = __('Affiliate Rejected Email', 'relay-affiliate-marketing');
         $this->subject = __("[{site_title}] EDD Your Affiliate Application: Update", 'relay-affiliate-marketing');
-        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-rejected.php';
-        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-rejected.php';
-        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
+        $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-rejected.php';
+        $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-rejected.php';
+        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
 
         // Additional initialization if needed.
     }
 
     public function trigger($data)
     {
-        error_log('edd rejected triggered function called');
         if (empty($data['email'])) {
             return;
         }

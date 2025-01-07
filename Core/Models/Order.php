@@ -7,7 +7,7 @@ defined("ABSPATH") or exit;
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Helpers\EDD;
 use EDDA\Affiliate\App\Model;
-
+use DateTime;
 class Order extends Model
 {
 
@@ -61,9 +61,10 @@ class Order extends Model
 
     public static function createOrder($order, $relayWpCustomerId, $affiliate)
     {
-        $medium = $order->edd_get_payment_meta(Affiliate::ORDER_FROM_META_KEY);
-        $recurring_order_id = $order->edd_get_payment_meta(Affiliate::ORDER_RECURRING_ID, true);
+        $medium = edd_get_payment_meta($order->id,Affiliate::ORDER_FROM_META_KEY);
+        $recurring_order_id =edd_get_payment_meta($order->id,Affiliate::ORDER_RECURRING_ID, true);
         $totalPrice = EDD::getTotalPrice($order);
+        $date = new DateTime($order->date);
         //create order if already not created
         $insertedRows = Order::query()->create([
             'woo_order_id' => $order->id,
@@ -75,7 +76,7 @@ class Order extends Model
             'calculated_total_amount' => $totalPrice,
             'medium' => $medium ?? 'link',
             'recurring_parent_id' => $recurring_order_id ?: null,
-            'ordered_at' => Functions::getEDDTime($order->date_created->format('Y-m-d h:i:s')),
+            'ordered_at' => Functions::getEDDTime($date->format('Y-m-d h:i:s')),
             'order_status' => $order->status,
             'created_at' => Functions::currentUTCTime(),
             'updated_at' => Functions::currentUTCTime(),

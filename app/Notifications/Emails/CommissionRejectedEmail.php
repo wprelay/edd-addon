@@ -25,9 +25,9 @@ class CommissionRejectedEmail extends EDD_Emails
         $this->subject = __("[{site_title}] E Commission Rejected Email", 'relay-affiliate-marketing');
 
         // Template paths
-        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-commission-rejected.php';
-        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-commission-rejected.php';
-        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
+        $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-commission-rejected.php';
+        $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-commission-rejected.php';
+        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
     }
 
     public function trigger($data)

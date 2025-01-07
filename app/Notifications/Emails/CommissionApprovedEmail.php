@@ -5,8 +5,8 @@ namespace EDDA\Affiliate\App\Notifications\Emails;
 defined('ABSPATH') or exit;
 
 use EDD_Emails;
-use EDDA\Affiliate\App\Helpers\Functions;
-use EDDA\Affiliate\App\Helpers\WC;
+use RelayWp\Affiliate\App\Helpers\Functions;
+use RelayWp\Affiliate\App\Helpers\WC;
 
 class CommissionApprovedEmail extends EDD_Emails
 {
@@ -28,9 +28,9 @@ class CommissionApprovedEmail extends EDD_Emails
         $this->subject = __("[{site_title}] E Congratulations - You've Earned a Commission!", 'relay-affiliate-marketing');
 
         // Template paths
-        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-commission-approved.php';
-        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-commission-approved.php';
-        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
+        $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-commission-approved.php';
+        $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-commission-approved.php';
+        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
     }
 
     public function trigger($data)

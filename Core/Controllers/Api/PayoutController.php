@@ -6,21 +6,16 @@ defined("ABSPATH") or exit;
 
 use Error;
 use Exception;
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\PluginHelper;
-use RelayWp\Affiliate\Core\Models\CouponPayout;
-use RelayWp\Affiliate\Core\Resources\Payouts\PaymentHistoryCollection;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\PluginHelper;
 use RelayWp\Affiliate\Core\Resources\Payouts\PendingPaymentCollection;
 use RelayWp\Affiliate\App\Services\Database;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use RelayWp\Affiliate\App\Services\Settings;
-use RelayWp\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\Member;
+use EDDA\Affiliate\Core\Models\Affiliate;
 use RelayWp\Affiliate\Core\Models\Payout;
 use RelayWp\Affiliate\Core\Models\Transaction;
 use RelayWp\Affiliate\Core\ValidationRequest\Payout\BulkPayoutRequest;
-use RelayWp\Affiliate\Core\ValidationRequest\Payout\DeletePayoutRequest;
 use RelayWp\Affiliate\Core\ValidationRequest\Payout\PayoutRequest;
 
 class PayoutController
@@ -90,9 +85,8 @@ class PayoutController
             ]);
 
             $payoutId = Payout::query()->lastInsertedId();
-
-            if (\ActionScheduler::is_initialized()) {
-                as_schedule_single_action(strtotime("+1 minute"), 'rwpa_enqueue_payments', [[$payoutId], $source]);
+            if (!wp_next_scheduled('rwpa_enqueue_payments', [$payoutId, $source])) {
+                wp_schedule_single_event(strtotime("+1 minute"), 'rwpa_enqueue_payments', [$payoutId, $source]);
             } else {
                 //action schedlular not initialized
                 Payout::query()->update([
@@ -106,7 +100,7 @@ class PayoutController
             return Response::success([
                 'message' => __('Payout Recorded Successfully', 'relay-affiliate-marketing'),
             ]);
-        } catch (Exception | Error $exception) {
+        } catch (Exception|Error $exception) {
             Database::rollBack();
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());
@@ -172,10 +166,9 @@ class PayoutController
             foreach ($payouts as $payout) {
                 $payout_ids[] = $payout->id;
             }
-
-            if (\ActionScheduler::is_initialized()) {
-                as_schedule_single_action(strtotime("+1 minute"), 'rwpa_enqueue_payments', [$payout_ids, $source]);
-            } else {
+            if (!wp_next_scheduled('rwpa_enqueue_payments', [$payout_ids, $source])) {
+                wp_schedule_single_event(strtotime("+1 minute"), 'rwpa_enqueue_payments', [$payout_ids, $source]);
+            }else {
             }
 
             Database::commit();
@@ -183,159 +176,7 @@ class PayoutController
             return Response::success([
                 'message' => __('Payout Recorded Successfully', 'relay-affiliate-marketing'),
             ]);
-        } catch (Exception | Error $exception) {
-            Database::rollBack();
-            PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
-            return Response::error(PluginHelper::serverErrorMessage());
-        }
-    }
-
-    public function getPaymentMethods(Request $request)
-    {
-        try {
-            $paymentMethods = [];
-            $paymentMethods = apply_filters('rwpa_get_payment_methods', $paymentMethods);
-
-            $paymentSettings = Settings::get('payment_settings');
-
-            foreach ($paymentMethods as $index => $method) {
-                if ($method['value'] == 'manual') continue;
-                if (!isset($paymentSettings[$method['value']]['enabled']) || !$paymentSettings[$method['value']]['enabled']) {
-                    unset($paymentMethods[$index]);
-                }
-            }
-
-            $removeIndexes = [];
-
-            foreach ($paymentMethods as $index => $method) {
-                $removeIndexes[] = $method;
-            }
-
-            return Response::success($removeIndexes);
-        } catch (Exception | Error $exception) {
-            PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
-            return Response::error(PluginHelper::serverErrorMessage());
-        }
-    }
-
-    public function pendingPaymentList(Request $request)
-    {
-        $search = $request->get('search');
-        $currentPage = $request->get('current_page');
-        $perPage = $request->get('per_page');
-
-        try {
-
-            $affiliateTable = Affiliate::getTableName();
-            $memberTable = Member::getTableName();
-            $payoutTable = Payout::getTableName();
-            $transactionTable = Transaction::getTableName();
-            $search = $request->get('search');
-            $rwpCurrency = Functions::getSelectedCurrency();
-
-            $query = Affiliate::query()
-                ->select("{$affiliateTable}.id as affiliate_id, {$affiliateTable}.payment_email as paypal_billing_email, $transactionTable.currency as currency, (SELECT SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) FROM {$payoutTable} WHERE {$payoutTable}.affiliate_id = {$affiliateTable}.id)  as pending_payout_count,
-                (COALESCE(SUM(CASE WHEN {$transactionTable}.type = 'credit' THEN {$transactionTable}.amount END), 0) - COALESCE(SUM(CASE WHEN {$transactionTable}.type = 'debit' THEN {$transactionTable}.amount END), 0)) as balance,
-                {$memberTable}.first_name as affiliate_first_name, {$memberTable}.last_name as affiliate_last_name, {$memberTable}.email as affiliate_email")
-                ->leftJoin("{$memberTable}", "{$memberTable}.id = {$affiliateTable}.member_id")
-                ->leftJoin("{$transactionTable}", "{$affiliateTable}.id = {$transactionTable}.affiliate_id")
-                ->where("$transactionTable.currency = %s", [$rwpCurrency])
-                ->when($search, function ($query) use ($memberTable, $search) {
-                    return $query->nameLike("$memberTable.first_name", "$memberTable.last_name", $search)
-                        ->orWhere("$memberTable.email like %s", ["%{$search}%"]);
-                })->groupBy("{$affiliateTable}.id")
-                ->having("(COALESCE(SUM(CASE WHEN {$transactionTable}.type = 'credit' THEN {$transactionTable}.amount END), 0) - COALESCE(SUM(CASE WHEN {$transactionTable}.type = 'debit' THEN {$transactionTable}.amount END), 0)) != 0")
-                ->orderBy("{$affiliateTable}.id", "DESC");
-
-            $totalCount = $query->count();
-
-            $data = $query->limit($perPage)
-                ->offset(($currentPage - 1) * $perPage)
-                ->get();
-
-            return PendingPaymentCollection::collection([$data, $totalCount, $perPage, $currentPage]);
-        } catch (Exception | Error $exception) {
-            PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
-            return Response::error(PluginHelper::serverErrorMessage());
-        }
-    }
-
-    public function paymentHistories(Request $request)
-    {
-        try {
-            $search = $request->get('search');
-            $currentPage = $request->get('current_page');
-            $perPage = $request->get('per_page');
-            $rwpCurrency = Functions::getSelectedCurrency();
-            $status = $request->get('payout_status', []);
-
-            $affiliateTable = Affiliate::getTableName();
-            $memberTable = Member::getTableName();
-            $payoutTable = Payout::getTableName();
-            $couponPayoutTable = CouponPayout::getTableName();
-
-            $query = Payout::query()
-                ->select("{$payoutTable}.id as payout_id, {$payoutTable}.currency as currency, {$payoutTable}.status as status, {$payoutTable}.deleted_at as deleted_at, {$payoutTable}.payment_source as payment_source, {$payoutTable}.created_at as paid_at, {$affiliateTable}.id as affiliate_id, {$memberTable}.first_name as affiliate_first_name, {$memberTable}.last_name as affiliate_last_name, {$memberTable}.email as affiliate_email,
-                    {$payoutTable}.amount as paid_amount,
-                    {$payoutTable}.payout_details as additional_details,
-                    {$couponPayoutTable}.coupon_code
-                    ")
-                ->join("{$affiliateTable}", "{$affiliateTable}.id = {$payoutTable}.affiliate_id")
-                ->join("{$memberTable}", "{$memberTable}.id = {$affiliateTable}.member_id")
-                ->leftJoin("{$couponPayoutTable}", "{$couponPayoutTable}.payout_id = {$payoutTable}.id")
-                ->where("{$payoutTable}.currency = %s", [$rwpCurrency])
-                ->when(!empty($status), function (Database $query) use ($payoutTable, $status) {
-                    return $query->where("{$payoutTable}.status in ('" . implode("','", $status) . "')");
-                })
-                ->when($search, function ($query) use ($memberTable, $search) {
-                    return $query->nameLike("$memberTable.first_name", "$memberTable.last_name", $search)
-                        ->orWhere("$memberTable.email like %s", ["%{$search}%"]);
-                })->orderBy("{$payoutTable}.id", "DESC");
-
-            $totalCount = $query->count();
-
-            $data = $query->limit($perPage)
-                ->offset(($currentPage - 1) * $perPage)
-                ->get();
-
-            return PaymentHistoryCollection::collection([$data, $totalCount, $perPage, $currentPage]);
-        } catch (Exception | Error $exception) {
-            PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
-            return Response::error(PluginHelper::serverErrorMessage());
-        }
-    }
-
-    public function revertPayout(Request $request)
-    {
-        $request->validate(new DeletePayoutRequest());
-
-        Database::beginTransaction();
-        try {
-            $payoutId = $request->get('payout_id');
-            $revert_reason = $request->get('revert_reason');
-            $payout = Payout::query()->findOrFail($payoutId);
-
-            Transaction::query()->create([
-                'affiliate_id' => $payout->affiliate_id,
-                'type' => Transaction::CREDIT,
-                'currency' => $payout->currency,
-                'amount' => $payout->amount,
-                'transactionable_id' => $payout->id,
-                'transactionable_type' => 'payout',
-                'system_note' => "Payout Reverted #{$payoutId}",
-            ]);
-
-            Payout::query()->update([
-                'revert_reason' => $revert_reason,
-                'deleted_at' => Functions::currentUTCTime(),
-            ], ['id' => $payout->id]);
-
-            Database::commit();
-
-            return Response::success([
-                'message' => __('Payment History Reverted', 'relay-affiliate-marketing')
-            ]);
-        } catch (Exception | Error $exception) {
+        } catch (Exception|Error $exception) {
             Database::rollBack();
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());

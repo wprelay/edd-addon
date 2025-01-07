@@ -5,15 +5,16 @@ namespace EDDA\Affiliate\Core\Controllers\StoreFront;
 defined("ABSPATH") or exit;
 
 use EDDA\Affiliate\App\Helpers\Functions;
-use EDDA\Affiliate\App\Services\Settings;
+use EDDA\Affiliate\App\Helpers\EDD;
+use Relaywp\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\CommissionEarning;
-use RelayWp\Affiliate\Core\Models\CommissionTier;
+use EDDA\Affiliate\Core\Models\CommissionEarning;
+use EDDA\Affiliate\Core\Models\CommissionTier;
 use EDDA\Affiliate\Core\Models\Customer;
 use EDDA\Affiliate\Core\Models\Member;
 use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Product;
-use RelayWp\Affiliate\Core\Models\Program;
+use EDDA\Affiliate\Core\Models\Program;
 //use Relaywp\Affiliate\Core\Models\Rules;
 use RelayWp\Affiliate\Core\Models\Transaction;
 use EDD_Customer;
@@ -111,30 +112,24 @@ class OrderPlacedController
             return;
         }
         $affiliateReferralCode = edd_get_payment_meta($order_id, Affiliate::AFFILIATE_META_KEY_FOR_ORDER, true);
-
         if (!$affiliateReferralCode) {
             return;
         }
 
         $affiliate = Affiliate::query()->findBy('referral_code', $affiliateReferralCode);
-
         if (empty($affiliate)) {
             return;
         }
-        $payment = new EDD_Payment($order_id);
-        $status = $payment->status;
+        $status = EDD::getOrderStatus($order->status);
 
         $successful_order_statuses = Settings::get('affiliate_settings.successful_order_status');
         $failure_order_statues = Settings::get('affiliate_settings.failure_order_status');
 
         $program = Program::query()->find($affiliate->program_id);
-
         $order_already_exists = Order::query()->where('woo_order_id = %s', [$order->id])->first();
-
         if (!Program::isValid($program) && empty($order_already_exists)) {
             return;
         }
-
         $relayWpOrder = static::captureOrder($order, $affiliate);
 
         if (in_array($status, $successful_order_statuses)) {
@@ -207,7 +202,7 @@ class OrderPlacedController
                     'amount' => $commissionEarning->commission_amount,
                     'transactionable_id' => $commissionEarning->id,
                     'transactionable_type' => 'commission',
-                    'system_note' => "Commission Rejected #{$commissionEarning->id} Due to Order Failure Status #{$order->woo_order_id} {$order->get_status()}",
+                    'system_note' => "Commission Rejected #{$commissionEarning->id} Due to Order Failure Status #{$order->woo_order_id} {$order->status}",
                     'created_at' => Functions::currentUTCTime(),
                 ]);
             } else if ($commissionEarning->status == CommissionEarning::REJECTED) {
@@ -216,7 +211,7 @@ class OrderPlacedController
 
             CommissionEarning::query()->update([
                 'status' => CommissionEarning::REJECTED,
-                'reason' => "From Failure Order {$order->get_status()}",
+                'reason' => "From Failure Order {$order->status}",
                 'updated_at' => Functions::currentUTCTime(),
             ], [
                 'id' => $commissionEarning->id
@@ -244,7 +239,7 @@ class OrderPlacedController
 
         if (empty($relayWpCustomerId)) return false;
 
-        $relayWpOrder = Order::query()->where("woo_order_id = %d", [$order->get_id()])->first();
+        $relayWpOrder = Order::query()->where("woo_order_id = %d", [$order->id])->first();
 
         //TODO: Need to improve this logic
         $orderAlreadyCreated = false;
@@ -260,17 +255,16 @@ class OrderPlacedController
         }
 
         //Getting the newly created order
-        $relayWpOrder = Order::query()->where("woo_order_id = %d", [$order->get_id()])->first();
+        $relayWpOrder = Order::query()->where("woo_order_id = %d", [$order->id])->first();
 
-        $order_items = $order->get_items();
-
+        $order_items =edd_get_payment_meta_cart_details($order->id);
         // Loop through the order items to get product details.
         foreach ($order_items as $item_id => $item) {
             // Product details for the current item.
-            $wooProductId = $item->get_product_id();
-            $wooProductName = $item->get_name();
-            $wooProductQuantity = $item->get_quantity();
-            $wooProductPrice = $item->get_total();
+            $wooProductId = $item['id'];
+            $wooProductName = $item['name'];
+            $wooProductQuantity = $item['quantity'];
+            $wooProductPrice = $item['price'];
 
             Product::query()->create([
                 'woo_product_id' => $wooProductId,

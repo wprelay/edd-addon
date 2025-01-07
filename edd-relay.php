@@ -130,7 +130,8 @@ if (class_exists('EDDA\Affiliate\App\App')) {
     return;
 }
 
+add_shortcode('edd_affiliate_page', [\RelayWp\Affiliate\Core\Controllers\StoreFront\AccountController::class, 'registerAffiliateEndpointContent']);
 //for testing purpose
-add_filter('test_create_coupon',[\EDDA\Affiliate\Core\Models\Affiliate::class, 'createCoupon'],10,2);
+//add_filter('test_create_coupon',[\EDDA\Affiliate\Core\Models\Affiliate::class, 'createCoupon'],10,2);
 
-add_action('edd_insert_payment', [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'],10,1);
+//add_action('edd_insert_payment', [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'],10,1);

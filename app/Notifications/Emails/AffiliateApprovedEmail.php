@@ -24,9 +24,9 @@ class AffiliateApprovedEmail extends EDD_Emails
         $this->subject = __("[{site_title}] EDD Welcome to our Affiliate Program - You're In!", 'relay-affiliate-marketing');
 
         // Template paths
-        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-approved.php';
-        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-approved.php';
-        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
+        $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-approved.php';
+        $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-approved.php';
+        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
     }
 
     public function trigger($data)

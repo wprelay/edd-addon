@@ -1,11 +1,11 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Models;
+namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Model;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Model;
 use RelayWp\Affiliate\App\Services\Settings;
 
 class CommissionEarning extends Model
@@ -54,7 +54,7 @@ class CommissionEarning extends Model
             'commission_currency' => $relayWpOrder->currency,
             'show_commission' => $commissionDetails['commission_display'] ?? true,
             'status' => CommissionEarning::PENDING,
-            'reason' => "From SuccessFul Order {$order->get_status()}",
+            'reason' => "From SuccessFul Order {$order->status}",
             'type' => $commissionDetails['type'] ?? 'commission',
             'date_created' => Functions::currentUTCTime(),
             'created_at' => Functions::currentUTCTime(),
@@ -67,15 +67,21 @@ class CommissionEarning extends Model
 
         return false;
     }
-
     public static function triggerAutoApproveJob($commissionEarningIds)
+    {
+        $delay = apply_filters('rwpa_auto_approval_delay_in_days', Settings::get('affiliate_settings.general.auto_approve_delay_in_days'));
+        $delay = $delay ?: 0;
+        wp_schedule_single_event(strtotime("+{$delay} days"), 'rwpa_auto_approve_commission', [$commissionEarningIds]);
+    }
+
+    /*public static function triggerAutoApproveJob($commissionEarningIds)
     {
         if (\ActionScheduler::is_initialized()) {
             $delay = apply_filters('rwpa_auto_approval_delay_in_days', Settings::get('affiliate_settings.general.auto_approve_delay_in_days'));
             $delay = $delay ?: 0;
             as_schedule_single_action(strtotime("+{$delay} days"), 'rwpa_auto_approve_commission', [$commissionEarningIds]);
         }
-    }
+    }*/
 
     public static function sendCommissionStatusMail($commissionStatus, $commissionEarning, $affiliate, $member)
     {
@@ -87,7 +93,7 @@ class CommissionEarning extends Model
             'email' => $member->email,
             'commission_amount' => $commissionEarning->commission_amount,
             'commission_type' => $commissionEarning->type,
-            'commission_currency' => get_woocommerce_currency(),
+            'commission_currency' => edd_get_currency(),
             'commission_order_id' => $commissionEarning->order_id,
             'sale_date' => Functions::utcToWPTime($relayWpOrder->created_at),
             'relay_wp_order' => $relayWpOrder

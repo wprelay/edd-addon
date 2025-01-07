@@ -9,7 +9,7 @@ use DateTimeZone;
 use Cartrabbit\Request\Request;
 use Exception;
 use EDDA\Affiliate\App\Route;
-use EDDA\Affiliate\App\Services\Settings;
+use RelayWp\Affiliate\App\Services\Settings;
 
 defined('ABSPATH') or exit;
 
@@ -112,7 +112,7 @@ class Functions
 
         if (empty($currency)) {
             if(function_exists('get_woocommerce_currency')) {
-                $currency = get_woocommerce_currency();
+                $currency = edd_get_currency();
             }
         }
         return $currency;

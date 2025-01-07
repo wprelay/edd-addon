@@ -1,10 +1,10 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Models;
+namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Model;
+use EDDA\Affiliate\App\Model;
 
 class CouponPayout extends Model
 {

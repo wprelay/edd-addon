@@ -5,7 +5,7 @@ namespace EDDA\Affiliate\App\Notifications\Emails;
 defined('ABSPATH') or exit;
 
 use EDD_Emails;
-use EDDA\Affiliate\App\Services\Settings;
+use RelayWp\Affiliate\App\Services\Settings;
 
 class AffiliateSaleMadeEmail extends EDD_Emails
 {
@@ -23,9 +23,9 @@ class AffiliateSaleMadeEmail extends EDD_Emails
         $this->subject = __("[{site_title}] E Congratulations - An Affiliate Sale Has Been Made!", 'relay-affiliate-marketing');
 
         // Define the template paths
-        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-sale-made.php';
-        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-sale-made.php';
-        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
+        $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-sale-made.php';
+        $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-sale-made.php';
+        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
 
         // Define the recipient email (store owner)
         $email = Settings::get('general_settings.contact_information.merchant_email');

@@ -4,8 +4,8 @@ namespace EDDA\Affiliate\App\Helpers;
 
 defined('ABSPATH') or exit;
 
-use EDDA\Affiliate\App\Services\Database;
-use EDDA\Affiliate\App\Services\Settings;
+use RelayWp\Affiliate\App\Services\Database;
+use RelayWp\Affiliate\App\Services\Settings;
 
 class EDD
 {
@@ -59,59 +59,6 @@ class EDD
         return $prefix . $product_id . ' ' . html_entity_decode(get_the_title($product_id));
     }
 
-    public static function getTerms(array $args = []): array
-    {
-        $args = array_merge([
-            'search' => '',
-            'taxonomy' => '',
-            'hide_empty' => false,
-        ], $args);
-
-        $terms = get_terms($args);
-
-        return is_array($terms) ? $terms : [];
-    }
-
-    public static function getCategoryParent($category_id): string
-    {
-        if (empty($category_id) || $category_id < 0) return '';
-
-        $category = WC::getCategory($category_id);
-        if (is_object($category)) return '';
-
-        $label = !empty($category->parent) ? self::getCategoryParent($category->parent) . ' -> ' : '';
-        $label .= !empty($category->term_id) ? $category->name : '';
-        return $label;
-    }
-
-
-    public static function getCategory($category_id)
-    {
-        return self::getTerm($category_id, 'product_cat');
-    }
-
-
-    public static function getTerm($term_id, string $taxonomy = '')
-    {
-        if (!is_numeric($term_id) || $term_id <= 0) return false;
-        $term = get_term($term_id, $taxonomy);
-
-        return is_object($term) ? $term : false;
-    }
-
-    public static function getIdsFromLabelsArray($items)
-    {
-        if (!is_array($items)) return [];
-
-        $ids = [];
-        foreach ($items as $item) {
-            if (isset($item['value'])) {
-                $ids[] = $item['value'];
-            }
-        }
-        return $ids;
-    }
-
     public static function getCountryWithLabel($countryCode)
     {
         if(!defined( 'WC_VERSION' )) return $countryCode;
@@ -153,7 +100,7 @@ class EDD
         }
     }
 
-    public static function getEDDCurrencySymbol($currencyCode = '')
+    public static function getEDDCurrencySymbol($currencyCode = 'USA')
     {
         if (empty($currencyCode) && function_exists('edd_get_currency')) {
             $currency = edd_currency_symbol($currencyCode);
@@ -161,32 +108,27 @@ class EDD
         return html_entity_decode($currency);
     }
 
-    static function getSession($key, $default = NULL)
+    static function getSession($key, $default = null)
     {
-        if (static::isWCSessionLoaded() && Util::isMethodExists(WC()->session, 'get')) {
-            return WC()->session->get($key, $default);
+        if (static::isEDDSessionsEnabled() && isset(EDD()->session)) {
+            return EDD()->session->get($key, $default);
         }
         return $default;
     }
 
-    /**
-     * set the session value by key
-     * @param $key
-     * @param $value mixed
-     */
     static function setSession($key, $value)
     {
-        if (static::isWCSessionLoaded() && Util::isMethodExists(WC()->session, 'set')) {
-            WC()->session->set($key, $value);
+        if (static::isEDDSessionsEnabled() && isset(EDD()->session)) {
+            EDD()->session->set($key, $value);
         }
     }
 
-    static function isWCSessionLoaded()
+    static function isEDDSessionsEnabled()
     {
-        return function_exists('WC') && isset(WC()->session) && WC()->session != null;
+        return class_exists('EDD') && isset(EDD()->session) && EDD()->session != null;
     }
 
-    public static function getAppliedCouponsforOrder($order_id)
+    /*public static function getAppliedCouponsforOrder($order_id)
     {
         if (!is_object($order_id) && empty($order_id)) {
             $order = wc_get_order($order_id);
@@ -198,7 +140,7 @@ class EDD
         $applied_coupons = $order->get_coupon_codes();
 
         return $applied_coupons;
-    }
+    }*/
 
     public static function getTotalPrice($order)
     {
@@ -213,20 +155,20 @@ class EDD
         }
 
         if ($excludeShipping) {
-            return;
+            return $orderTotal;
         }
 
         return apply_filters('rwpa_get_total_price_of_the_order', $orderTotal);
     }
 
-    public static function removeCoupon(string $code): bool
+    /*public static function removeCoupon(string $code): bool
     {
         if(!WC::isWoocommerceIntsalled()){
             return $code;
         }
         return function_exists('WC') && isset(WC()->cart)
             && Util::isMethodExists(WC()->cart, 'remove_coupon') && WC()->cart->remove_coupon($code);
-    }
+    }*/
 
     public static function isCouponExists(string $coupon_code)
     {
@@ -256,30 +198,26 @@ class EDD
 
     public static function getStoreName()
     {
-        return get_bloginfo('name');
+        return 'WpLoyalty';
     }
 
     public static function getAdminDashboard()
     {
-        $pluginSlug = RWPA_PLUGIN_SLUG;
+        $pluginSlug = EDDA_PLUGIN_SLUG;
 
         return admin_url("admin.php?page={$pluginSlug}#");
     }
 
     public static function getStates($countryCode)
     {
-        if(!WC::isWoocommerceIntsalled()){
-            return $countryCode;
+        if (!$countryCode) {
+            return [];
         }
-        if (empty($countryCode)) return [];
-
-        $woo_countries = new WC_Countries();
-
-        $states = $woo_countries->get_states($countryCode);
-
-        if (empty($states)) return [];
-
-        return $states;
+        if (function_exists('edd_get_shop_states')) {
+            $states = edd_get_shop_states($countryCode);
+            return isset($states) ? $states : [];
+        }
+        return [];
     }
 
     public static function getOrderEditUrl($order_id)
@@ -304,7 +242,7 @@ class EDD
         return [];
     }
 
-    public static function isHPOSEnabled()
+   /* public static function isHPOSEnabled()
     {
         if (! class_exists('\Automattic\WooCommerce\Utilities\OrderUtil')) {
             return false;
@@ -315,7 +253,7 @@ class EDD
         }
 
         return false;
-    }
+    }*/
 
     public static function getDefaultCurrency()
     {
@@ -323,13 +261,6 @@ class EDD
             return edd_get_currency();
         }
         return '';
-    }
-
-    public static function isWoocommerceIntsalled() : bool{
-        if (class_exists('EDD') && function_exists('WC')) {
-            return true;
-        }
-        return false;
     }
     public static function getCurrencySymbol($symbol,$code){
         switch ( $code ) {
@@ -419,5 +350,32 @@ class EDD
                 break;
         }
         return $symbol;
+    }
+    public static function getOrderStatus($order_status){
+        if($order_status=='complete'){
+            return 'completed';
+        }
+        return $order_status;
+    }
+    public static function getEDDCountries()
+    {
+        if(function_exists('edd_get_country_list')){
+            return edd_get_country_list();
+        }
+        return [];
+    }
+    public static function getOrderStatusSettings($order_status){
+        $result = [];
+        foreach ($order_status as $status) {
+            switch ($status) {
+                case 'completed':
+                    $result[] = 'complete';
+                    break;
+                default:
+                    $result[] = $status;
+                    break;
+            }
+        }
+        return $result;
     }
 }

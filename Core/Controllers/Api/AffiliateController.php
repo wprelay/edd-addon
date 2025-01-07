@@ -8,9 +8,9 @@ use Error;
 use Exception;
 use RelayWp\Affiliate\App\Exception\ModelNotFoundException;
 use EDDA\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\PluginHelper;
+use EDDA\Affiliate\App\Helpers\PluginHelper;
 use EDDA\Affiliate\App\Helpers\EDD;
-use EDDA\Affiliate\App\Helpers\WordpressHelper;
+use RelayWp\Affiliate\App\Helpers\WordpressHelper;
 use RelayWp\Affiliate\App\Route;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateCollection;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateCommissionCollection;
@@ -20,19 +20,19 @@ use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateSelectInfoCollection;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateTransactionCollection;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateProfileResource;
 use RelayWp\Affiliate\Core\Resources\Affiliate\AffiliateSalesCollection;
-use EDDA\Affiliate\App\Services\Database;
+use RelayWp\Affiliate\App\Services\Database;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use EDDA\Affiliate\App\Services\Settings;
+use RelayWp\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
 use EDDA\Affiliate\Core\Models\AffiliateCoupon;
 use RelayWp\Affiliate\Core\Models\CommissionEarning;
 use RelayWp\Affiliate\Core\Models\CommissionTier;
-use RelayWp\Affiliate\Core\Models\Customer;
+use EDDA\Affiliate\Core\Models\Customer;
 use EDDA\Affiliate\Core\Models\Member;
-use RelayWp\Affiliate\Core\Models\Order;
+use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;
-use RelayWp\Affiliate\Core\Models\Program;
+use EDDA\Affiliate\Core\Models\Program;
 use RelayWp\Affiliate\Core\Models\Transaction;
 use RelayWp\Affiliate\Core\ValidationRequest\Affiliate\AffiliateProfileUpdateRequest;
 use RelayWp\Affiliate\Core\ValidationRequest\Affiliate\AffiliateRequest;
@@ -451,7 +451,7 @@ class AffiliateController
             return Response::error(PluginHelper::serverErrorMessage());
         }
     }
-
+    //edd works
     public function payouts(Request $request)
     {
         try {
@@ -470,14 +470,12 @@ class AffiliateController
                 ->where("affiliate_id = %d", [$affiliateId])
                 ->where("currency = %s", [$rwpCurrency])
                 ->orderBy("$payoutTable.id", "DESC");
-
             $totalCount = $query->count();
 
             $data = $query
                 ->limit($perPage)
                 ->offset(($currentPage - 1) * $perPage)
                 ->get();
-
             return AffiliatePayoutCollection::collection([$data, $affiliate, $totalCount, $perPage, $currentPage]);
         } catch (Exception | Error $exception) {
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);

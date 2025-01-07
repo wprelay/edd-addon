@@ -25,9 +25,9 @@ class PaymentProcessedEmail extends EDD_Emails
         $this->subject = __("[{site_title}]  E We've processed your affiliate payout", 'relay-affiliate-marketing');
 
         // Template paths
-        $this->template_html = EDDA_PLUGIN_PATH . 'resources/emails/affiliate-payment-processed.php';
-        $this->template_plain = EDDA_PLUGIN_PATH . 'resources/emails/plain/affiliate-payment-processed.php';
-        $this->template_base = EDDA_PLUGIN_PATH . 'resources/emails/';
+        $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-payment-processed.php';
+        $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-payment-processed.php';
+        $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
     }
 
     public function trigger($data)
@@ -60,7 +60,7 @@ class PaymentProcessedEmail extends EDD_Emails
         }
 
         // Send the email to the affiliate
-        $this->send($data['email'], $this->subject, $html, $this->get_headers(), $this->get_attachments());
+        $this->send($data['email'], $this->subject, $html, $this->get_headers());
     }
 
     public function get_content_html()

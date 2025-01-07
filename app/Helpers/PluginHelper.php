@@ -23,17 +23,7 @@ class PluginHelper
 
     public static function getAuthRoutes()
     {
-        $is_pro = static::isPRO();
-        $routes = [];
-        if ($is_pro) {
-            $routes = require(EDDA_PLUGIN_PATH . 'Pro/routes/auth-api.php');
-        }
-
-        $core_routes = require(EDDA_PLUGIN_PATH . 'Core/routes/auth-api.php');
-
-        $routes = array_merge($routes, $core_routes);
-
-        return $routes;
+        return [];
     }
 
     public static function pluginRoutePath($pro = false)

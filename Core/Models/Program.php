@@ -1,14 +1,14 @@
 <?php
 
-namespace RelayWp\Affiliate\Core\Models;
+namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
 use Cartrabbit\Request\Request;
 use DateTime;
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Model;
-
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Model;
+use EDDA\Affiliate\Core\Models\CommissionTier;
 class Program extends Model
 {
 

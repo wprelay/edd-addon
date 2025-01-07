@@ -6,7 +6,7 @@ defined("ABSPATH") or exit;
 
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Helpers\PluginHelper;
-use EDDA\Affiliate\App\Helpers\WordpressHelper;
+use RelayWp\Affiliate\App\Helpers\WordpressHelper;
 use EDDA\Affiliate\App\Hooks\AdminHooks;
 use EDDA\Affiliate\App\Hooks\AssetsActions;
 use EDDA\Affiliate\App\Hooks\CustomHooks;
@@ -14,7 +14,7 @@ use EDDA\Affiliate\App\Hooks\EddHooks;
 use EDDA\Affiliate\App\Hooks\WPHooks;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use EDDA\Affiliate\App\Services\CustomRules;
+use RelayWp\Affiliate\App\Services\CustomRules;
 
 class Route
 {
@@ -24,9 +24,6 @@ class Route
 
     public static function register()
     {
-        add_action('wp_ajax_nopriv_' . static::AJAX_NO_PRIV_NAME, [__CLASS__, 'handleGuestRequests']);
-        add_action('wp_ajax_' . static::AJAX_NAME, [__CLASS__, 'handleAuthRequests']);
-
         AdminHooks::register();
         AssetsActions::register();
         EddHooks::register();
