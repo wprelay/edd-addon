@@ -35,15 +35,22 @@ class EDD
             'excluded_products' => $discountData['excluded_products'] ?? [],
             'scope'             => $discountData['scope'] // Excluded products
         ];
-        // Update existing discount or create a new one
+
+        $existing_discount = edd_get_discount_by_code($discountData['code']);
+        if ($existing_discount) {
+            $discountId = $existing_discount->id;
+            $existing_discount_id = edd_update_discount($discountId, $data);
+            if (!$existing_discount_id) {
+                return false;
+            }
+            return $existing_discount_id;
+        }
         $discount_id = edd_add_discount($data);
 
-        // Check if the discount was saved successfully
         if (!$discount_id) {
             return false;
         }
 
-        // Add metadata to the discount
         if (!empty($discountData['meta_data']) && is_array($discountData['meta_data'])) {
             foreach ($discountData['meta_data'] as $key => $value) {
                 edd_add_adjustment_meta($discount_id, $key, $value);

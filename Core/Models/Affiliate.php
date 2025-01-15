@@ -6,13 +6,12 @@ defined("ABSPATH") or exit;
 
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Helpers\PluginHelper;
+use RelayWp\Affiliate\Core\Models\CustomerDiscount;
 use EDDA\Affiliate\App\Helpers\EDD;
-use EDDA\Affiliate\App\Helpers\WordpressHelper;
+use RelayWp\Affiliate\App\Helpers\WordpressHelper;
 use Cartrabbit\Request\Request;
 use EDDA\Affiliate\App\Model;
-use EDDA\Affiliate\App\Services\Settings;
-use EDD_Customer;
-use WP_User;
+use RelayWp\Affiliate\App\Services\Settings;
 use WP_Error;
 class Affiliate extends Model
 {

@@ -18,6 +18,8 @@ use EDDA\Affiliate\Core\Controllers\Admin\EDDController;
 use EDDA\Affiliate\Core\Controllers\Api\AffiliateController;
 use EDDA\Affiliate\Core\Controllers\Api\CommissionController;
 use EDDA\Affiliate\Core\Controllers\Api\PayoutController;
+use EDDA\Affiliate\App\Helpers\RulesHelper;
+
 $store_front_hooks = [
     'actions' => [
         'rwpa_auto_approve_commission' => ['callable' => [BackgroundJobController::class, 'autoApproveCommission'], 'priority' => 9, 'accepted_args' => 1],
@@ -51,7 +53,9 @@ $store_front_hooks = [
         'rwpa_get_edd_countries' => ['callable' => [EDD::class, 'getEDDCountries'], 'priority' => 10, 'accepted_args' => 0],
         'rwpa_get_search_countries' => ['callable' => [EDDController::class, 'getSearchEDDCountries'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_get_search_states' => ['callable' => [EDDController::class, 'getSearchEDDStates'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_edd_get_order_status' => ['callable' => [EDD::class, 'getOrderStatusSettings'], 'priority' => 10, 'accepted_args' => 1]
+        'rwpa_edd_get_order_status' => ['callable' => [EDD::class, 'getOrderStatusSettings'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_update_affiliate_coupons_in_db' => ['callable' => [Affiliate::class, 'updateCoupon'], 'priority' => 9, 'accepted_args' => 3],
+        'rwpa_edd_get_commission_details_for_rule_based_type' => ['callable' => [RulesHelper::class, 'calculateCommissions'], 'priority' => 10, 'accepted_args' => 4],
     ]
 ];
 
@@ -64,7 +68,6 @@ $admin_hooks = [
         'rwpa_send_affiliate_registered_email' => ['callable' => [EmailController::class, 'affiliateRegisteredEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_affiliate_commission_approved_email' => ['callable' => [EmailController::class, 'commissionApprovedEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_affiliate_commission_rejected_email' => ['callable' => [EmailController::class, 'commissionRejectedEmail'], 'priority' => 5, 'accepted_args' => 1],
-        'rwpa_update_affiliate_coupons' => ['callable' => [BackgroundJobController::class, 'updateAffiliateCoupons'], 'priority' => 9, 'accepted_args' => 1],
         'rwpa_enqueue_payments' => ['callable' => [BackgroundJobController::class, 'enqueuePayments'], 'priority' => 9, 'accepted_args' => 2],
         'rwpa_record_rwt_payment' => ['callable' => [RWPPayment::class, 'processPayment'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_process_coupon_payouts' => ['callable' => [Coupon::class, 'sendPayments'], 'priority' => 11, 'accepted_args' => 1],

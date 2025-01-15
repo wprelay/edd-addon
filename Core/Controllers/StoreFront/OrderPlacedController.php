@@ -27,11 +27,6 @@ class OrderPlacedController
     {
         static::orderCreated($order_id, []);
     }
-    //order created only store the affiliate id to order meta
-
-    //order status updated - create or update order in our db when processing / on hold / completed.
-
-    // calculate commission and update into commission earnings
     public static function orderCreated($order_id, $data)
     {
         $order = edd_get_order($order_id);
@@ -154,7 +149,6 @@ class OrderPlacedController
         $commissionTier = CommissionTier::findBy('program_id', $program->id);
 
         $commissionDetails = Program::calculateCommission($order, $relayWpOrder, $program);
-
         $commissionEarningIds = [];
         if ($commissionDetails) {
             $commissionEarningId = CommissionEarning::createCommissionEarning($commissionDetails, $affiliate, $order, $relayWpOrder, $program);
