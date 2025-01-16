@@ -89,7 +89,6 @@ class RulesHelper
             }
 
             $updated_total_bonus_amount = apply_filters('rwpa_wprelay_get_bonus_amount', $total_bonus_amount, $order);
-
             if (!is_numeric($updated_total_bonus_amount)) {
                 $updated_total_bonus_amount = 0;
             }
@@ -228,11 +227,11 @@ class RulesHelper
 
     public static function getItemAmountForBonusCalculation($item, $excludeTaxes)
     {
-        $lineItemTaxAmount = $item->tax;
+        $lineItemTaxAmount = $item['tax'];
 
         //        if customer want to issue commisison amount for each product need to update logi by using filter
 
-        $total_amount = $item->price + $lineItemTaxAmount;
+        $total_amount = $item['price']+ $lineItemTaxAmount;
 
         if ($excludeTaxes) {
             // Get the tax data

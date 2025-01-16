@@ -6,7 +6,6 @@ defined("ABSPATH") or exit;
 
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Model;
-
 class Member extends Model
 {
 
@@ -34,9 +33,9 @@ class Member extends Model
 
     public static function createMemberFromOrder($order)
     {
-
-        $firstName = $order->first_name;
-        $lastName = $order->last_name;
+        $payment_meta = edd_get_payment_meta($order->id);
+        $firstName = $payment_meta['first_name'];
+        $lastName = $payment_meta['last_name'];
         $billingEmail = $order->email;
 
 

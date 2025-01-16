@@ -10,7 +10,7 @@ use RelayWp\Affiliate\Core\Models\Payout;
 use RelayWp\Affiliate\Core\Payments\Coupon;
 use RelayWp\Affiliate\Core\Payments\Offline;
 use RelayWp\Affiliate\Core\Payments\RWPPayment;
-use RelayWp\Affiliate\Core\ShortCodes\ShortCodes;
+use EDDA\Affiliate\Core\ShortCodes\ShortCodes;
 use EDDA\Affiliate\App\Helpers\EDD;
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\Core\Models\Affiliate;
@@ -34,7 +34,7 @@ $store_front_hooks = [
         'rwpa_edd_track_affiliate_order' => ['callable' => [Order::class, 'isNeedToTrackTheOrder'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_get_shortcodes_classes' => ['callable' => [ShortCodes::class, 'getShortCodes'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_coupon_payment_available_for_currency' => ['callable' => [Coupon::class, 'isCouponPaymentAvailable'], 'priority' => 10, 'accepted_args' => 2],
-        'rwpa_edd_wprelay_calculate_bonus_from_rules' => ['callable' => [RulesHelper::class, 'calculateBonusCommission'], 'priority' => 10, 'accepted_args' => 2],
+        'rwpa_edd_wprelay_calculate_bonus_from_rules' => ['callable' => [RulesHelper::class, 'calculateBonusCommission'], 'priority' => 10, 'accepted_args' => 4],
 
         'rwpa_get_default_currency' => ['callable' => [EDD::class, 'getDefaultCurrency'], 'priority' => 11, 'accepted_args' => 0],
         'rwpa_get_currency_list' => ['callable' => [EDD::class, 'getCurrencyList'], 'priority' => 11, 'accepted_args' => 0],
@@ -69,7 +69,6 @@ $admin_hooks = [
         'rwpa_send_affiliate_registered_email' => ['callable' => [EmailController::class, 'affiliateRegisteredEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_affiliate_commission_approved_email' => ['callable' => [EmailController::class, 'commissionApprovedEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_affiliate_commission_rejected_email' => ['callable' => [EmailController::class, 'commissionRejectedEmail'], 'priority' => 5, 'accepted_args' => 1],
-        'rwpa_enqueue_payments' => ['callable' => [BackgroundJobController::class, 'enqueuePayments'], 'priority' => 9, 'accepted_args' => 2],
         'rwpa_record_rwt_payment' => ['callable' => [RWPPayment::class, 'processPayment'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_process_coupon_payouts' => ['callable' => [Coupon::class, 'sendPayments'], 'priority' => 11, 'accepted_args' => 1],
     ],

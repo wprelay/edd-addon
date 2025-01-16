@@ -16,7 +16,7 @@
  */
 
 use EDDA\Affiliate\App\App;
-use EDDA\Affiliate\Core\Controllers\StoreFront\OrderPlacedController;
+
 defined('ABSPATH') or exit;
 
 defined('EDDA_PLUGIN_PATH') or define('EDDA_PLUGIN_PATH', plugin_dir_path(__FILE__));
@@ -129,9 +129,3 @@ if (class_exists('EDDA\Affiliate\App\App')) {
     //    wp_die('Plugin is unable to find the App class.');
     return;
 }
-
-add_shortcode('edd_affiliate_page', [\RelayWp\Affiliate\Core\Controllers\StoreFront\AccountController::class, 'registerAffiliateEndpointContent']);
-//for testing purpose
-//add_filter('test_create_coupon',[\EDDA\Affiliate\Core\Models\Affiliate::class, 'createCoupon'],10,2);
-
-//add_action('edd_insert_payment', [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'],10,1);
