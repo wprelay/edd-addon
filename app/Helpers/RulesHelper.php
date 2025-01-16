@@ -228,17 +228,14 @@ class RulesHelper
 
     public static function getItemAmountForBonusCalculation($item, $excludeTaxes)
     {
-        $lineItemTaxAmount = $item->tax;
-
+        $lineItemTaxAmount = $item['tax'];
         //        if customer want to issue commisison amount for each product need to update logi by using filter
 
-        $total_amount = $item->price + $lineItemTaxAmount;
-
+        $total_amount = $item['price'] + $lineItemTaxAmount;
         if ($excludeTaxes) {
             // Get the tax data
             $total_amount -= $lineItemTaxAmount;
         }
-
         return $total_amount;
     }
 
