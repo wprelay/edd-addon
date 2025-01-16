@@ -160,7 +160,7 @@ class OrderPlacedController
 
 
         if ($commissionTier->rate_type != CommissionTier::RULE_BASED_TYPE && $active_rules_available) {
-            $bonusCommissionDetails = apply_filters('rwpa_edd_wprelay_calculate_bonus_from_rules', [], $order, $relayWpOrder, $program);
+            $bonusCommissionDetails = apply_filters('rwpa_wprelay_calculate_bonus_from_rules', [], $order, $relayWpOrder, $program);
 
             $bonusCommissionDetails['type'] = 'bonus';
 
