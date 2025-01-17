@@ -8,17 +8,15 @@ use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Helpers\EDD;
 use Relaywp\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
-use EDDA\Affiliate\Core\Models\CommissionEarning;
-use EDDA\Affiliate\Core\Models\CommissionTier;
+use RelayWp\Affiliate\Core\Models\CommissionEarning;
+use RelayWp\Affiliate\Core\Models\CommissionTier;
 use EDDA\Affiliate\Core\Models\Customer;
 use EDDA\Affiliate\Core\Models\Member;
 use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Product;
 use EDDA\Affiliate\Core\Models\Program;
-//use Relaywp\Affiliate\Core\Models\Rules;
 use RelayWp\Affiliate\Core\Models\Transaction;
 use EDD_Customer;
-use EDD_Payment;
 
 class OrderPlacedController
 {

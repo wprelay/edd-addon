@@ -14,7 +14,7 @@ use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
 use RelayWp\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
-use EDDA\Affiliate\Core\Models\CommissionEarning;
+use RelayWp\Affiliate\Core\Models\CommissionEarning;
 use EDDA\Affiliate\Core\Models\Member;
 use RelayWp\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;

@@ -17,8 +17,8 @@ use EDDA\Affiliate\Core\Models\Affiliate;
 use EDDA\Affiliate\Core\Controllers\Admin\EDDController;
 use EDDA\Affiliate\Core\Controllers\Api\AffiliateController;
 use EDDA\Affiliate\Core\Controllers\Api\CommissionController;
-use EDDA\Affiliate\Core\Controllers\Api\PayoutController;
 use EDDA\Affiliate\App\Helpers\RulesHelper;
+use EDDA\Affiliate\Core\Models\CommissionEarning;
 
 $store_front_hooks = [
     'actions' => [
@@ -48,7 +48,6 @@ $store_front_hooks = [
         'affiliate_edd_sales' => ['callable' => [AffiliateController::class, 'sales'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_update_commision_status' => ['callable' => [CommissionController::class, 'updateStatus'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_edd_payouts' => ['callable' => [AffiliateController::class, 'payouts'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_edd_record_payout' => ['callable' => [PayoutController::class, 'recordPayout'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_set_session' => ['callable' => [EDD::class, 'setSession'], 'priority' => 8, 'accepted_args' => 2],
         'rwpa_get_session' => ['callable' => [EDD::class, 'getSession'], 'priority' => 8, 'accepted_args' => 2],
         'rwpa_get_edd_countries' => ['callable' => [EDD::class, 'getEDDCountries'], 'priority' => 10, 'accepted_args' => 0],
@@ -57,6 +56,7 @@ $store_front_hooks = [
         'rwpa_edd_get_order_status' => ['callable' => [EDD::class, 'getOrderStatusSettings'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_update_affiliate_coupons_in_db' => ['callable' => [Affiliate::class, 'updateCoupon'], 'priority' => 9, 'accepted_args' => 3],
         'rwpa_edd_get_commission_details_for_rule_based_type' => ['callable' => [RulesHelper::class, 'calculateCommissions'], 'priority' => 10, 'accepted_args' => 4],
+        'rwpa_edd_create_commission_earning' => ['callable' => [CommissionEarning::class, 'createCommissionEarning'], 'priority' => 10, 'accepted_args' => 5],
     ]
 ];
 
