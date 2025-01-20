@@ -22,7 +22,7 @@ class PaymentProcessedEmail extends EDD_Emails
 
         // Email heading and subject
         $this->heading = __("[{site_title}]  We've processed your affiliate payout", 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}]  E We've processed your affiliate payout", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}]  We've processed your affiliate payout", 'relay-affiliate-marketing');
 
         // Template paths
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-payment-processed.php';

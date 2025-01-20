@@ -20,7 +20,7 @@ class AffiliateSaleMadeEmail extends EDD_Emails
         $this->description = __('An email sent to the Store Owner when an affiliate sale is made', 'relay-affiliate-marketing');
         $this->customer_email = false;
         $this->heading = __('Affiliate Sale Made Email', 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}] E Congratulations - An Affiliate Sale Has Been Made!", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}] Congratulations - An Affiliate Sale Has Been Made!", 'relay-affiliate-marketing');
 
         // Define the template paths
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-sale-made.php';

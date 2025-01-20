@@ -22,7 +22,7 @@ class CommissionRejectedEmail extends EDD_Emails
 
         // Email heading and subject
         $this->heading = __("[{site_title}] Commission Rejected Email", 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}] E Commission Rejected Email", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}] Commission Rejected Email", 'relay-affiliate-marketing');
 
         // Template paths
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-commission-rejected.php';

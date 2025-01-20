@@ -20,8 +20,8 @@ class AffiliateApprovedEmail extends EDD_Emails
         $this->customer_email = true;
 
         // Email heading and subject
-        $this->heading = __("[{site_title}] EDD Welcome to our Affiliate Program - You're In!", 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}] EDD Welcome to our Affiliate Program - You're In!", 'relay-affiliate-marketing');
+        $this->heading = __("[{site_title}] Welcome to our Affiliate Program - You're In!", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}] Welcome to our Affiliate Program - You're In!", 'relay-affiliate-marketing');
 
         // Template paths
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-approved.php';

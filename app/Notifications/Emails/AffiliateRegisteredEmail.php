@@ -23,8 +23,8 @@ class AffiliateRegisteredEmail extends EDD_Emails
         $this->recipient = $email ? $email : get_bloginfo('admin_email');
 
         // Email heading and subject
-        $this->heading = __("[{site_title}] E New Affiliate Application Received", 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}] E New Affiliate Application Received", 'relay-affiliate-marketing');
+        $this->heading = __("[{site_title}] New Affiliate Application Received", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}] New Affiliate Application Received", 'relay-affiliate-marketing');
 
         // Template paths
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-registered-email.php';

@@ -149,7 +149,7 @@ class OrderPlacedController
         $commissionDetails = Program::calculateCommission($order, $relayWpOrder, $program);
         $commissionEarningIds = [];
         if ($commissionDetails) {
-            $commissionEarningId = CommissionEarning::createCommissionEarning($commissionDetails, $affiliate, $order, $relayWpOrder, $program);
+            $commissionEarningId =apply_filters('rwpa_edd_create_commission_earning',$commissionDetails, $affiliate, $order, $relayWpOrder, $program);
 
             $commissionEarningIds[] = $commissionEarningId;
         }
@@ -162,7 +162,7 @@ class OrderPlacedController
 
             $bonusCommissionDetails['type'] = 'bonus';
 
-            $bonusCommissionEarningId = CommissionEarning::createCommissionEarning($bonusCommissionDetails, $affiliate, $order, $relayWpOrder, $program);
+            $bonusCommissionEarningId = apply_filters('rwpa_edd_create_commission_earning',$bonusCommissionDetails, $affiliate, $order, $relayWpOrder, $program);
 
             $commissionEarningIds[] = $bonusCommissionEarningId;
         }

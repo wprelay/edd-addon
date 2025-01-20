@@ -25,7 +25,7 @@ class CommissionApprovedEmail extends EDD_Emails
 
         // Email heading and subject
         $this->heading = __("[{site_title}] Congratulations - You've Earned a Commission!", 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}] E Congratulations - You've Earned a Commission!", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}] Congratulations - You've Earned a Commission!", 'relay-affiliate-marketing');
 
         // Template paths
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-commission-approved.php';

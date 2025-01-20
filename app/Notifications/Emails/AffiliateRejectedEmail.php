@@ -18,7 +18,7 @@ class AffiliateRejectedEmail extends EDD_Emails
         $this->description = __('An email sent to the affiliate when an application is rejected', 'relay-affiliate-marketing');
         $this->customer_email = true;
         $this->heading = __('Affiliate Rejected Email', 'relay-affiliate-marketing');
-        $this->subject = __("[{site_title}] EDD Your Affiliate Application: Update", 'relay-affiliate-marketing');
+        $this->subject = __("[{site_title}] Your Affiliate Application: Update", 'relay-affiliate-marketing');
         $this->template_html = RWPA_PLUGIN_PATH . 'resources/emails/affiliate-rejected.php';
         $this->template_plain = RWPA_PLUGIN_PATH . 'resources/emails/plain/affiliate-rejected.php';
         $this->template_base = RWPA_PLUGIN_PATH . 'resources/emails/';
