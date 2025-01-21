@@ -251,7 +251,7 @@ class AffiliateController
         }
     }
 
-    public function updateStatus(Request $request)
+    public static function updateStatus(Request $request)
     {
         $request->validate(new AffiliateUpdateStatusRequest());
         Database::beginTransaction();
@@ -358,7 +358,7 @@ class AffiliateController
         }
     }
 
-    public function sales(Request $request)
+    public static function sales(Request $request)
     {
         try {
             $affiliateId = $request->get('affiliate_id');
@@ -452,7 +452,7 @@ class AffiliateController
         }
     }
     //edd works
-    public function payouts(Request $request)
+    public static function payouts(Request $request)
     {
         try {
             $affiliateId = $request->get('affiliate_id');

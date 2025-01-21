@@ -8,7 +8,7 @@
  * Requires PHP:         7.4
  * Author:               Relay Affiliate
  * Author URI:           https://www.wprelay.com
- * Text Domain:          edd-wprelay
+ * Text Domain:          edd-relay
  * Domain Path:          /i18n/languages
  * License:              GPL v3 or later
  * License URI:          https://www.gnu.org/licenses/gpl-3.0.html

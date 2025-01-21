@@ -22,7 +22,7 @@ use RelayWp\Affiliate\Core\Models\Transaction;
 
 class CommissionController
 {
-    public function updateStatus(Request $request)
+    public static function updateStatus(Request $request)
     {
         Database::beginTransaction();
         try {
