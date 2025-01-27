@@ -25,10 +25,11 @@ class OrderPlacedController
     {
         static::orderCreated($order_id, []);
     }
-    public static function orderCreated($order_id, $data)
+    public static function orderCreated($order_id)
     {
         $order = edd_get_order($order_id);
         $track_order_data = apply_filters('rwpa_edd_track_affiliate_order', [], $order);
+
         if (empty($track_order_data)) {
             return false;
         }
@@ -67,12 +68,12 @@ class OrderPlacedController
         $order_id = $order->id;
 
         edd_update_payment_meta($order_id, $meta_key, $meta_value);
-        //        update_post_meta($order_id, );
+
         edd_update_payment_meta($order_id, Affiliate::ORDER_FROM_META_KEY, $medium);
 
         edd_update_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_FOR, $affiliate->id);
 
-        edd_update_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_SESSION_EMIL, $order->email);
+        edd_update_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_SESSION_EMAIL, $order->email);
 
         if ($medium == 'recurring' && isset($track_order_data['recurring_order_from']) && is_object($track_order_data['recurring_order_from'])) {
             edd_update_payment_meta($order_id,Affiliate::ORDER_RECURRING_ID, $track_order_data['recurring_order_from']->id);
@@ -97,10 +98,10 @@ class OrderPlacedController
     }
 
 
-    public static function orderStatusUpdated($order_id,$new_status, $old_status)
+    public static function orderStatusUpdated($order_id,$new_status,$old_status)
     {
         $order = edd_get_order($order_id);
-        $session_email = edd_get_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_SESSION_EMIL, true);
+        $session_email = edd_get_payment_meta($order_id, Affiliate::ORDER_AFFILIATE_SESSION_EMAIL, true);
         if ($session_email != $order->email) {
             return;
         }

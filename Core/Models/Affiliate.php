@@ -20,7 +20,7 @@ class Affiliate extends Model
     public const AFFILIATE_META_KEY_FOR_ORDER = '_relay_wp_affiliate_code';
     public const ORDER_FROM_META_KEY = '_relay_wp_order_from';
     public const  ORDER_AFFILIATE_FOR = '_relay_wp_affiliate_id';
-    public const  ORDER_AFFILIATE_SESSION_EMIL = '_relay_wp_order_session_email';
+    public const  ORDER_AFFILIATE_SESSION_EMAIL = '_relay_wp_order_session_email';
     public const  ORDER_RECURRING_ID = '_relay_wp_recurring_order_id';
 
 

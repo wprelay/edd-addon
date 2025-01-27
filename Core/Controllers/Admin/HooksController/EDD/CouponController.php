@@ -4,12 +4,11 @@ namespace EDDA\Affiliate\Core\Controllers\Admin\HooksController\EDD;
 
 defined("ABSPATH") or exit;
 
-use RelayWp\Affiliate\App\Helpers\Functions;
-use RelayWp\Affiliate\App\Helpers\WC;
-use RelayWp\Affiliate\App\Route;
-use RelayWp\Affiliate\Core\Models\Affiliate;
-use RelayWp\Affiliate\Core\Models\AffiliateCoupon;
-use WC_Coupon;
+use EDDA\Affiliate\App\Helpers\Functions;
+use EDDA\Affiliate\App\Helpers\EDD;
+use EDDA\Affiliate\App\Route;
+use EDDA\Affiliate\Core\Models\Affiliate;
+use EDDA\Affiliate\Core\Models\AffiliateCoupon;
 
 class CouponController
 {

@@ -19,6 +19,8 @@ use EDDA\Affiliate\Core\Controllers\Api\AffiliateController;
 use EDDA\Affiliate\Core\Controllers\Api\CommissionController;
 use EDDA\Affiliate\App\Helpers\RulesHelper;
 use EDDA\Affiliate\Core\Models\CommissionEarning;
+use EDDA\Affiliate\Core\Controllers\StoreFront\OrderController;
+use EDDA\Affiliate\Core\Controllers\Hooks\CommissionTierController;
 
 $store_front_hooks = [
     'actions' => [
@@ -31,7 +33,13 @@ $store_front_hooks = [
         'rwpa_get_commission_details_for_percentage_per_sale_type' => ['callable' => [CommissionTier::class, 'getPercentagePerSaleAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getRecursiveDataToStore'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_core_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getCoreRecursiveData'], 'priority' => 10, 'accepted_args' => 4],
-        'rwpa_edd_track_affiliate_order' => ['callable' => [Order::class, 'isNeedToTrackTheOrder'], 'priority' => 10, 'accepted_args' => 2],
+        'rwpa_edd_track_affiliate_order' => function(){
+            return [
+                ['callable' => [Order::class, 'isNeedToTrackTheOrder'], 'priority' => 10, 'accepted_args' => 2],
+                ['callable' => [OrderController::class, 'isRecurringOrder'], 'priority' => 11, 'accepted_args' => 2],
+            ];
+        },
+        'rwpa_get_commission_details_for_edd_tier_based_type' => ['callable' => [CommissionTierController::class, 'getTierBasedAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_shortcodes_classes' => ['callable' => [ShortCodes::class, 'getShortCodes'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_coupon_payment_available_for_currency' => ['callable' => [Coupon::class, 'isCouponPaymentAvailable'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_edd_wprelay_calculate_bonus_from_rules' => ['callable' => [RulesHelper::class, 'calculateBonusCommission'], 'priority' => 10, 'accepted_args' => 4],

@@ -110,7 +110,7 @@ class CommissionTier extends Model
                 'keep_entry' => false
             ];
         } else {
-            $data = apply_filters("rwpa_get_commission_details_for_{$rateType}_type", [], $wooOrder, $relayWpOrder, $commissionTier);
+            $data = apply_filters("rwpa_get_commission_details_for_edd_{$rateType}_type", [], $wooOrder, $relayWpOrder, $commissionTier);
         }
 
         return apply_filters('rwpa_commission_details', $data, $wooOrder);

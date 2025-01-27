@@ -18,7 +18,6 @@ class EDDController
 {
     public static function getSearchEDDCountries(Request $request)
     {
-        error_log("enetered in getSearchEDDCountries");
         try {
             $search_term = $request->get('search');
 
