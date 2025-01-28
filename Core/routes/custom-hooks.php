@@ -8,6 +8,7 @@ use RelayWp\Affiliate\Core\Models\CommissionTier;
 use EDDA\Affiliate\Core\Models\Order;
 use RelayWp\Affiliate\Core\Models\Payout;
 use RelayWp\Affiliate\Core\Payments\Coupon;
+use EDDA\Affiliate\Core\Models\CouponPayout;
 use RelayWp\Affiliate\Core\Payments\Offline;
 use RelayWp\Affiliate\Core\Payments\RWPPayment;
 use EDDA\Affiliate\Core\ShortCodes\ShortCodes;
@@ -25,12 +26,11 @@ use EDDA\Affiliate\Core\Controllers\Hooks\CommissionTierController;
 $store_front_hooks = [
     'actions' => [
         'rwpa_auto_approve_commission' => ['callable' => [BackgroundJobController::class, 'autoApproveCommission'], 'priority' => 9, 'accepted_args' => 1],
-        'rwpa_payment_mark_as_succeeded' => ['callable' => [Payout::class, 'markAsSucceeded'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_payment_mark_as_failed' => ['callable' => [Payout::class, 'markAsFailed'], 'priority' => 10, 'accepted_args' => 2],
     ],
     'filters' => [
-        'rwpa_get_commission_details_for_fixed_type' => ['callable' => [CommissionTier::class, 'getFixedAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
-        'rwpa_get_commission_details_for_percentage_per_sale_type' => ['callable' => [CommissionTier::class, 'getPercentagePerSaleAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
+        'rwpa_get_commission_details_for_edd_fixed_type' => ['callable' => [CommissionTier::class, 'getFixedAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
+        'rwpa_get_commission_details_for_edd_percentage_per_sale_type' => ['callable' => [CommissionTier::class, 'getPercentagePerSaleAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getRecursiveDataToStore'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_core_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getCoreRecursiveData'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_edd_track_affiliate_order' => function(){
@@ -65,6 +65,8 @@ $store_front_hooks = [
         'rwpa_update_affiliate_coupons_in_db' => ['callable' => [Affiliate::class, 'updateCoupon'], 'priority' => 9, 'accepted_args' => 3],
         'rwpa_edd_get_commission_details_for_rule_based_type' => ['callable' => [RulesHelper::class, 'calculateCommissions'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_edd_create_commission_earning' => ['callable' => [CommissionEarning::class, 'createCommissionEarning'], 'priority' => 10, 'accepted_args' => 5],
+        'rwpa_create_coupon_for_payout' => ['callable' => [CouponPayout::class, 'createCouponForPayout'], 'priority' => 11, 'accepted_args' => 1],
+        'rwpa_is_coupon_available' => ['callable' => [EDD::class, 'isCouponAvailable'], 'priority' => 11, 'accepted_args' => 1],
     ]
 ];
 
@@ -78,7 +80,6 @@ $admin_hooks = [
         'rwpa_affiliate_commission_approved_email' => ['callable' => [EmailController::class, 'commissionApprovedEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_affiliate_commission_rejected_email' => ['callable' => [EmailController::class, 'commissionRejectedEmail'], 'priority' => 5, 'accepted_args' => 1],
         'rwpa_record_rwt_payment' => ['callable' => [RWPPayment::class, 'processPayment'], 'priority' => 10, 'accepted_args' => 2],
-        'rwpa_process_coupon_payouts' => ['callable' => [Coupon::class, 'sendPayments'], 'priority' => 11, 'accepted_args' => 1],
     ],
     'filters' => [
         'rwpa_get_payment_methods' => ['callable' => [RWPPayment::class, 'getPaymentSources'], 'priority' => 11, 'accepted_args' => 2],

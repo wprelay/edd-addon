@@ -34,7 +34,7 @@ class Member extends Model
     public static function createMemberFromOrder($order)
     {
         $payment_meta = edd_get_payment_meta($order->id);
-        error_log(print_r($payment_meta,true));
+
         $firstName = $payment_meta['user_info']['first_name'];
         $lastName = $payment_meta['user_info']['last_name'];
         $billingEmail = $order->email;

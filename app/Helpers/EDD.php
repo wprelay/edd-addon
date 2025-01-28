@@ -176,6 +176,27 @@ class EDD
         return function_exists('WC') && isset(WC()->cart)
             && Util::isMethodExists(WC()->cart, 'remove_coupon') && WC()->cart->remove_coupon($code);
     }*/
+    public static function isCouponAvailable($coupon_code)
+    {
+        if (!function_exists('edd_get_discount_by_code') || empty($coupon_code)) {
+            return false;
+        }
+
+        $discount = edd_get_discount_by_code($coupon_code);
+
+        if (!$discount) {
+            return false;
+        }
+
+        $usage_limit = $discount->get_max_uses();
+        $usage_count = $discount->use_count;
+
+        if (!$usage_limit || $usage_count < $usage_limit) {
+            return true;
+        }
+
+        return false;
+    }
 
     public static function isCouponExists(string $coupon_code)
     {

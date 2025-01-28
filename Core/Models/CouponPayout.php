@@ -44,40 +44,30 @@ class CouponPayout extends Model
 
     public static function createCouponForPayout($couponData)
     {
-        if (!function_exists('WC')) {
+        if (!function_exists('edd_store_discount')) {
             return false;
         }
+        $discountData = [
+            'name'              => $couponData['code'], // Coupon name
+            'code'              => $couponData['code'], // Coupon code
+            'status'            => $couponData['status'] === 'publish' ? 'active' : 'inactive', // Status (e.g., 'active')
+            'type'              => $couponData['discount_type'] === 'percent' ? 'percent' : 'flat', // Discount type: 'flat' or 'percent'
+            'amount'            => $couponData['discount_value'], // Discount amount
+            'uses'              => $couponData['usage_limit_per_coupon'], // Usage limit for the coupon
+            'min_price'         => $couponData['minimum_amount'], // Minimum cart total to apply the coupon
+            'start'             => '', // Start date (optional)
+            'expiration'        => $couponData['date_expires'] ?? '', // Expiration date
+            'once_per_customer' => $couponData['usage_limit_per_user'] ? 1 : 0, // Limit to one use per customer
+            'product_reqs'      => [], // Required products (empty for no restrictions)
+            'excluded_products' => [], // Excluded products
+            'apply_before_tax'  => $couponData['apply_before_tax'], // Apply before tax
+            'global'            => !$couponData['individual_use'], // Global discount
+        ];
+        $discount_id = edd_store_discount($discountData);
 
-        // Check if WooCommerce is activated
-        if (!class_exists('WC_Coupon')) {
+        if (empty($discount_id)) {
             return false;
         }
-
-        $coupon =  new \WC_Coupon();
-
-        // Set coupon code
-        $coupon_code = $couponData['code'];
-
-        $coupon->set_code($coupon_code);
-
-        $coupon->set_status($couponData['status']);
-
-        // Set coupon discount type and amount
-        $coupon->set_discount_type($couponData['discount_type']);
-        $coupon->set_amount($couponData['discount_value']);
-
-        // Set other coupon details based on $couponData
-        $coupon->set_individual_use($couponData['individual_use']);
-
-        $usage_limit_per_user = $couponData['usage_limit_per_user'] ?? null;
-
-        $coupon->set_usage_limit_per_user($couponData['usage_limit_per_user']);
-
-        $coupon->set_usage_limit($couponData['usage_limit_per_coupon']);
-        $coupon->set_minimum_amount($couponData['minimum_amount']);
-
-        $coupon_id = $coupon->save();
-
-        return $coupon_id;
+        return $discount_id;
     }
 }

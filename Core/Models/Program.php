@@ -58,7 +58,6 @@ class Program extends Model
 
         $amountDetails = CommissionTier::getCommissionAmountDetails($wooOrder, $relayWpOrder, $commissionTier, $bonus);
 
-
         if (isset($amountDetails['keep_entry']) && !$amountDetails['keep_entry']) {
             return false;
         }
@@ -73,7 +72,6 @@ class Program extends Model
             'commission_display' => $amountDetails['commission_display'] ?? true,
             'status' => 'pending'
         ];
-
         return apply_filters('rwpa_get_commission_earning_details', $data);
     }
 
