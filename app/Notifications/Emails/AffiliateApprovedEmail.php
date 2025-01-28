@@ -5,7 +5,7 @@ namespace EDDA\Affiliate\App\Notifications\Emails;
 defined('ABSPATH') or exit;
 
 use EDD_Emails;
-//use RelayWp\Affiliate\App\Helpers\WC;
+use EDDA\Affiliate\App\Helpers\EDD;
 
 class AffiliateApprovedEmail extends EDD_Emails
 {
@@ -43,7 +43,7 @@ class AffiliateApprovedEmail extends EDD_Emails
             '{{affiliate_name}}' => "{$data['first_name']} {$data['last_name']}",
             '{{email}}' => $data['email'],
             '{{affiliate_dashboard}}' => "WC::getAffilateEndPoint()",
-            '{{store_name}}' => "WC::getStoreName()",
+            '{{store_name}}' => EDD::getStoreName(),
         ];
 
         // Apply any custom filters for shortcodes

@@ -226,7 +226,7 @@ class EDD
 
     public static function getStoreName()
     {
-        return 'WpLoyalty';
+        return get_bloginfo('name');
     }
 
     public static function getAdminDashboard()

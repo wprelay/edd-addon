@@ -5,7 +5,7 @@ namespace EDDA\Affiliate\App\Notifications\Emails;
 defined('ABSPATH') or exit;
 
 use EDD_Emails;
-use RelayWp\Affiliate\App\Helpers\WC;
+use EDDA\Affiliate\App\Helpers\EDD;
 
 class PaymentProcessedEmail extends EDD_Emails
 {
@@ -48,7 +48,7 @@ class PaymentProcessedEmail extends EDD_Emails
             '{{payout_date}}' => $data['payout_date'],
             '{{payout_affiliate_notes}}' => $data['payout_affiliate_notes'],
             '{{affiliate_dashboard}}' => "WC::getAffilateEndPoint()",
-            '{{store_name}}' =>' WC::getStoreName()',
+            '{{store_name}}' => EDD::getStoreName(),
         ];
 
         // Apply any custom filters for shortcodes
