@@ -11,8 +11,6 @@ use RelayWp\Affiliate\Core\Resources\WC\CountryCollection;
 use RelayWp\Affiliate\Core\Resources\WC\StateCollection;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use WC_Countries;
-use WC_Product_Query;
 
 class EDDController
 {

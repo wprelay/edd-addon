@@ -63,7 +63,7 @@ $store_front_hooks = [
         'rwpa_get_search_states' => ['callable' => [EDDController::class, 'getSearchEDDStates'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_edd_get_order_status' => ['callable' => [EDD::class, 'getOrderStatusSettings'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_update_affiliate_coupons_in_db' => ['callable' => [Affiliate::class, 'updateCoupon'], 'priority' => 9, 'accepted_args' => 3],
-        'rwpa_edd_get_commission_details_for_rule_based_type' => ['callable' => [RulesHelper::class, 'calculateCommissions'], 'priority' => 10, 'accepted_args' => 4],
+        'rwpa_get_commission_details_for_edd_rule_based_type' => ['callable' => [RulesHelper::class, 'calculateCommissions'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_edd_create_commission_earning' => ['callable' => [CommissionEarning::class, 'createCommissionEarning'], 'priority' => 10, 'accepted_args' => 5],
         'rwpa_create_coupon_for_payout' => ['callable' => [CouponPayout::class, 'createCouponForPayout'], 'priority' => 11, 'accepted_args' => 1],
         'rwpa_is_coupon_available' => ['callable' => [EDD::class, 'isCouponAvailable'], 'priority' => 11, 'accepted_args' => 1],
