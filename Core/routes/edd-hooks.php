@@ -41,7 +41,6 @@ $admin_hooks = [
 
     'filters' => [
         'edd_email_templates' => ['callable' => [EmailController::class, 'addEmails'], 'priority' => 10, 'accepted_args' => 1],
-        'views_edit-shop_coupon' => ['callable' => [CouponController::class, 'addCouponFilter'], 'priority' => 10, 'accepted_args' => 1],
     ],
 ];
 

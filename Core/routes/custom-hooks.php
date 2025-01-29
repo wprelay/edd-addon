@@ -16,8 +16,7 @@ use EDDA\Affiliate\App\Helpers\EDD;
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\Core\Models\Affiliate;
 use EDDA\Affiliate\Core\Controllers\Admin\EDDController;
-use EDDA\Affiliate\Core\Controllers\Api\AffiliateController;
-use EDDA\Affiliate\Core\Controllers\Api\CommissionController;
+use EDDA\Affiliate\Core\Models\AffiliateCoupon;
 use EDDA\Affiliate\App\Helpers\RulesHelper;
 use EDDA\Affiliate\Core\Models\CommissionEarning;
 use EDDA\Affiliate\Core\Controllers\StoreFront\OrderController;
@@ -26,7 +25,6 @@ use EDDA\Affiliate\Core\Controllers\Hooks\CommissionTierController;
 $store_front_hooks = [
     'actions' => [
         'rwpa_auto_approve_commission' => ['callable' => [BackgroundJobController::class, 'autoApproveCommission'], 'priority' => 9, 'accepted_args' => 1],
-        'rwpa_payment_mark_as_failed' => ['callable' => [Payout::class, 'markAsFailed'], 'priority' => 10, 'accepted_args' => 2],
     ],
     'filters' => [
         'rwpa_get_commission_details_for_edd_fixed_type' => ['callable' => [CommissionTier::class, 'getFixedAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
@@ -52,10 +50,6 @@ $store_front_hooks = [
         'rwpa_create_coupon' => ['callable' => [Affiliate::class, 'createCoupon'], 'priority' => 5, 'accepted_args' => 2],
         'edda_search_product_list' => ['callable' => [EDDController::class, 'getProductsList'], 'priority' => 10, 'accepted_args' => 1],
         'edda_search_categories_list' => ['callable' => [EDDController::class, 'getCategoriesList'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_edd_update_status' => ['callable' => [AffiliateController::class, 'updateStatus'], 'priority' => 10, 'accepted_args' => 1],
-        'affiliate_edd_sales' => ['callable' => [AffiliateController::class, 'sales'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_update_commision_status' => ['callable' => [CommissionController::class, 'updateStatus'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_edd_payouts' => ['callable' => [AffiliateController::class, 'payouts'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_set_session' => ['callable' => [EDD::class, 'setSession'], 'priority' => 8, 'accepted_args' => 2],
         'rwpa_get_session' => ['callable' => [EDD::class, 'getSession'], 'priority' => 8, 'accepted_args' => 2],
         'rwpa_get_edd_countries' => ['callable' => [EDD::class, 'getEDDCountries'], 'priority' => 10, 'accepted_args' => 0],
@@ -67,6 +61,11 @@ $store_front_hooks = [
         'rwpa_edd_create_commission_earning' => ['callable' => [CommissionEarning::class, 'createCommissionEarning'], 'priority' => 10, 'accepted_args' => 5],
         'rwpa_create_coupon_for_payout' => ['callable' => [CouponPayout::class, 'createCouponForPayout'], 'priority' => 11, 'accepted_args' => 1],
         'rwpa_is_coupon_available' => ['callable' => [EDD::class, 'isCouponAvailable'], 'priority' => 11, 'accepted_args' => 1],
+        'rwpa_get_states_with_label' => ['callable' => [EDD::class, 'getStateWithLabel'], 'priority' => 11, 'accepted_args' => 3],
+        'rwpa_get_country_with_label' => ['callable' => [EDD::class, 'getCountryWithLabel'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_affiliate_create_account' => ['callable' => [Affiliate::class, 'createWPAccount'], 'priority' => 10, 'accepted_args' => 2],
+        'rwpa_update_coupon_code' => ['callable' => [AffiliateCoupon::class, 'updateDiscountCode'], 'priority' => 10, 'accepted_args' => 2],
+        'rwpa_is_coupon_exist' => ['callable' => [EDD::class, 'isCouponExists'], 'priority' => 10, 'accepted_args' => 1],
     ]
 ];
 

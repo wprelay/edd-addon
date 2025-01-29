@@ -13,42 +13,7 @@ class AffiliateCoupon extends Model
 
     public function createTable()
     {
-        $table = static::getTableName();
-        $charset = static::getCharSetCollate();
-        return "
-                CREATE TABLE {$table} (
-                    id                          BIGINT AUTO_INCREMENT,
-                    woo_coupon_id                      BIGINT NOT NULL,
-                    affiliate_id                      BIGINT NOT NULL,
-                    coupon                      VARCHAR(255)   NOT NULL,
-                    is_primary                  INT  default 0,
-                    discount_type               VARCHAR(255)   NOT NULL,
-                    discount_value                      DECIMAL(30, 2) NOT NULL,
-                    status                      VARCHAR(255)   NOT NULL,
-                    date_expires                BIGINT       NULL,
-                    individual_use              bool  default 0,
-                    product_ids                 JSON           NULL,
-                    excluded_product_ids        JSON           NULL,
-                    usage_limit_per_user        INT            NULL,
-                    usage_limit_per_coupon        INT            NULL,
-                    usage_limit_to_x_items      INT            NULL,
-                    free_shipping               bool default false,
-                    product_categories          JSON           NULL,
-                    excluded_product_categories JSON           NULL,
-                    excluded_sale_items         bool default false,
-                    minimum_amount         decimal(20, 2) NULL ,
-                    maximum_amount         decimal(20, 2) NULL,
-                    email_restrictions         JSON NULL,
-                    used_by         JSON NULL,
-                    custom_field         VARCHAR(255) NULL,
-                    custom_fields         JSON NULL, 
-                    additional_data         JSON NULL, 
-                    discount_amount         decimal(20, 2),
-                    created_at timestamp NOT NULL DEFAULT current_timestamp(),
-                    updated_at timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-                    deleted_at timestamp NULL,
-                    PRIMARY KEY (id)
-            ) {$charset};";
+        //relaywp code
     }
 
     public static function getDiscountData($discount_id)
@@ -87,25 +52,27 @@ class AffiliateCoupon extends Model
 
         return apply_filters('rwpa_get_discount_data', $data, $discount);
     }
-
-    public static function updateCouponCode($affiliate, $newCode)
+    public static function updateDiscountCode($affiliate, $newCode)
     {
-        $affiliateCoupon = self::query()->where('affiliate_id = %d', [$affiliate->id])
+        $affiliateDiscount = self::query()->where('affiliate_id = %d', [$affiliate->id])
             ->where('is_primary = %d', [1])
             ->first();
 
-        if (!$affiliateCoupon) return false;
+        if (!$affiliateDiscount) return false;
 
-        $coupon = new \WC_Coupon($affiliateCoupon->coupon);
+        $discount = edd_get_discount($affiliateDiscount->coupon);
 
-        $coupon->set_code($newCode);
+        if (!$discount) return false;
 
-        $coupon->save();
+        edd_update_discount($discount->id, [
+            'code'       => $newCode,
+            'modified'   => Functions::currentUTCTime(), // Updating timestamp
+        ]);
 
         AffiliateCoupon::query()->update([
             'coupon' => $newCode,
             'updated_at' => Functions::currentUTCTime()
-        ], ['id' => $affiliateCoupon->id]);
+        ], ['id' => $affiliateDiscount->id]);
 
         return true;
     }

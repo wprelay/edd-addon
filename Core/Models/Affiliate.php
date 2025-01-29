@@ -26,43 +26,9 @@ class Affiliate extends Model
 
     public function createTable()
     {
-        $charset = static::getCharSetCollate();
-
-        $table = static::getTableName();
-
-        $memberTable = Member::getTableName();
-        $programTable = Program::getTableName();
-
-        return "CREATE TABLE {$table} (
-                id BIGINT UNSIGNED AUTO_INCREMENT,
-                member_id BIGINT UNSIGNED,
-                program_id BIGINT UNSIGNED NULL,
-                payment_email VARCHAR(255) NULL,
-                status VARCHAR(255) NOT NULL,
-                phone_number VARCHAR(255),
-                referral_code VARCHAR(255) NULL,
-                social_links JSON NULL,
-                shipping_address JSON NULL,
-                tags JSON NULL,
-                extra_data JSON NULL,
-                meta_data JSON NULL,
-                is_email_verified int default 0,
-                create_wc_account int default 0,
-                wp_customer_id BIGINT UNSIGNED NULL,
-                is_wc_account_created int default 0,
-                date_registered TIMESTAMP NULL DEFAULT current_timestamp(),
-                created_at TIMESTAMP NOT NULL DEFAULT current_timestamp(),
-                updated_at TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-                deleted_at TIMESTAMP NULL,
-                PRIMARY KEY (id)
-                ) {$charset};";
+        //relaywp code
     }
 
-    public static function getTagsFromRequest(Request $request, $json = true)
-    {
-        $tags = $request->get('tags');
-        return wp_json_encode($tags);
-    }
 
     public static function getReferralCodeURL($affiliate, $key = 'referral_code')
     {
@@ -84,16 +50,6 @@ class Affiliate extends Model
     {
         return get_home_url();
     }
-
-    public static function getReferralURLWithoutCode()
-    {
-        $shopURL = self::getHomeURL();
-
-        $urlVariable = Settings::getAffiliateReferralURLVariable();
-
-        return $shopURL . "?{$urlVariable}=";
-    }
-
 
     public static function createCoupon($affiliate, $program)
     {
@@ -174,72 +130,6 @@ class Affiliate extends Model
         ]), ['id' => $affiliateCoupon->id]);
     }
 
-    /*public static function setShippingAddress($data)
-    {
-        if (!is_array($data)) return null;
-
-        return Functions::arrayToJson([
-            'address' => $data['address'] ?? null,
-            'city' => $data['city'],
-            'state' => isset($data['state']['value']) ? $data['state']['value'] : null,
-            'zip_code' => $data['zip_code'],
-            'country' => isset($data['country']['value']) ? $data['country']['value'] : null,
-        ]);
-    }*/
-
-    /*public static function getShippingAddressDetails($shippingAddress)
-    {
-        $data = Functions::jsonDecode($shippingAddress ?? null);
-        if (!is_array($data)) return [
-            'address' => '',
-            'city' => '',
-            'zip_code' => '',
-            'state' => null,
-            'country' => null,
-        ];
-
-        return [
-            'address' => $data['address'] ?? null,
-            'city' => $data['city'] ?? null,
-            'state' => WC::getStateWithLabel($data['country'] ?? null, $data['state'] ?? null),
-            'zip_code' => $data['zip_code'] ?? null,
-            'country' => WC::getCountryWithLabel($data['country'] ?? null),
-        ];
-    }*/
-
-    public static function setTags($tags)
-    {
-        if (!is_array($tags) || empty($tags)) return null;
-
-        return Functions::arrayToJson($tags);
-    }
-
-    public static function setSocialLinks($links)
-    {
-        if (!is_array($links) || empty($links)) return null;
-
-        return Functions::arrayToJson($links);
-    }
-
-    public static function getSocialLinks($links)
-    {
-        $links = Functions::jsonDecode($links);
-
-        if (empty($links)) {
-            $links = [];
-        }
-
-        $links['facebook_url'] = $links['facebook_url'] ?? null;
-        $links['youtube_url'] = $links['youtube_url'] ?? null;
-        $links['instagram_url'] = $links['instagram_url'] ?? null;
-        $links['twitter_url'] = $links['twitter_url'] ?? null;
-        $links['linkedin_url'] = $links['linkedin_url'] ?? null;
-        $links['website_url'] = $links['website_url'] ?? null;
-        $links['tiktok_url'] = $links['tiktok_url'] ?? null;
-
-        return $links;
-    }
-
     public static function createWPAccount($member, $affiliate)
     {
         try {
@@ -267,29 +157,8 @@ class Affiliate extends Model
             return false;
         }
     }
-
     public static function isAffiliateApproved($status): bool
     {
         return $status == 'approved';
-    }
-
-    public static function addAffiliateQueryParam($affiliate, $url)
-    {
-        $urlVariable = Settings::getAffiliateReferralURLVariable();
-        return add_query_arg($urlVariable, $affiliate->referral_code, $url);
-    }
-
-    public static function getAffiliateMetaData($meta_data)
-    {
-        $meta_data = Functions::jsonDecode($meta_data);
-
-        if (empty($meta_data)) return null;
-
-        return array_map(function ($field) {
-            return [
-                'label' => $field['label'],
-                'value' => $field['value']
-            ];
-        }, $meta_data);
     }
 }

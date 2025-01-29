@@ -6,6 +6,7 @@ defined("ABSPATH") or exit;
 
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Helpers\EDD;
+use RelayWp\Affiliate\Core\Models\Customer;
 use EDDA\Affiliate\App\Model;
 use DateTime;
 class Order extends Model
@@ -15,30 +16,7 @@ class Order extends Model
 
     public function createTable()
     {
-        $charset = static::getCharSetCollate();
-        $table = static::getTableName();
-
-        $affiliateTable = Affiliate::getTableName();
-        $customerTable = Customer::getTableName();
-
-        return "CREATE TABLE {$table} (
-                id  BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                customer_id  BIGINT UNSIGNED          DEFAULT NULL,
-                affiliate_id BIGINT UNSIGNED,
-                program_id BIGINT UNSIGNED,
-                woo_order_id BIGINT UNSIGNED,
-                currency     VARCHAR(255)        NOT NULL,
-                order_status     VARCHAR(255)        NOT NULL,
-                total_amount DECIMAL(15, 2),
-                calculated_total_amount DECIMAL(15, 2),
-                recurring_parent_id BIGINT UNSIGNED NULL,
-                medium VARCHAR(255) default 'link',
-                ordered_at   TIMESTAMP,
-                created_at   TIMESTAMP           NOT NULL DEFAULT current_timestamp(),
-                updated_at   TIMESTAMP           NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-                deleted_at timestamp NULL,
-                PRIMARY KEY (id)
-            ) {$charset};";
+       //relaywp code
     }
 
     public static function havingAffiliateCoupon( $order)

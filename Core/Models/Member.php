@@ -13,21 +13,7 @@ class Member extends Model
 
     public function createTable()
     {
-        $table = static::getTableName();
-        $charset = static::getCharSetCollate();
-
-        return "CREATE TABLE {$table} (
-                    id BIGINT UNSIGNED AUTO_INCREMENT,
-                    description TEXT,
-                    email varchar(255),
-                    type varchar(30) default 'customer',
-                    first_name varchar(255),
-                    last_name varchar(255),
-                    created_at timestamp NOT NULL DEFAULT current_timestamp(),
-                    updated_at timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-                    deleted_at timestamp NULL,
-                    PRIMARY KEY (id)
-                ) {$charset};";
+        //relaywp code
     }
 
 

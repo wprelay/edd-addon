@@ -111,7 +111,7 @@ class Functions
         $currency = $request->get('rwp_currency');
 
         if (empty($currency)) {
-            if(function_exists('get_woocommerce_currency')) {
+            if(function_exists('edd_get_currency')) {
                 $currency = edd_get_currency();
             }
         }

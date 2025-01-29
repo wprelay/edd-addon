@@ -9,7 +9,6 @@ use EDDA\Affiliate\App\Helpers\EDD;
 use RelayWp\Affiliate\App\Services\Settings;
 use EDDA\Affiliate\Core\Models\Affiliate;
 use EDDA\Affiliate\Core\Models\AffiliateCoupon;
-//use EDDA\Affiliate\Core\Models\Customer;
 use RelayWp\Affiliate\Core\Models\CustomerDiscount;
 use RelayWp\Affiliate\Core\Models\Member;
 use RelayWp\Affiliate\Core\Models\Program;

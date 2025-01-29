@@ -68,42 +68,39 @@ class EDD
 
     public static function getCountryWithLabel($countryCode)
     {
-        if(!defined( 'WC_VERSION' )) return $countryCode;
+        if (!function_exists('edd_get_country_list')) return $countryCode;
         if (!$countryCode) return null;
 
-        $wc_countries = new WC_Countries();
-
-        // Define the country code you want to retrieve details for
-        $country_code = $countryCode; // Replace with the desired country code
-
-        $countries = $wc_countries->get_countries();
+        // Get EDD country list
+        $countries = edd_get_country_list();
 
         // Check if the country code exists in the list
-        if (isset($countries[$country_code])) {
-
+        if (isset($countries[$countryCode])) {
             return [
-                'value' => $country_code,
-                'label' => $countries[$country_code]
+                'value' => $countryCode,
+                'label' => $countries[$countryCode]
             ];
-            // Add more details as needed
         } else {
             return [];
         }
     }
 
-    public static function getStateWithLabel($countryCode, $stateCode)
+
+    public static function getStateWithLabel($state = [],$countryCode, $stateCode)
     {
-        $states = WC::getStates($countryCode);
-
+        $states = EDD::getStates($countryCode);
         if (isset($states[$stateCode])) {
-
+            error_log(print_r([
+                'value' => $stateCode,
+                'label' => $states[$stateCode]
+            ],true));
             return [
                 'value' => $stateCode,
                 'label' => $states[$stateCode]
             ];
             // Add more details as needed
         } else {
-            return [];
+            return $state;
         }
     }
 
@@ -200,18 +197,9 @@ class EDD
 
     public static function isCouponExists(string $coupon_code)
     {
-        global $wpdb;
-        $coupon = Database::table($wpdb->posts)
-            ->select("ID, post_status")
-            ->where("post_type = %s AND post_title = %s", ['shop_coupon', $coupon_code])
-            ->first();
+        $discount_id = edd_get_discount_id_by_code($coupon_code);
 
-        // If coupon is found, check if it's in trash or not
-        if ($coupon) {
-            return $coupon;
-        }
-
-        return false; // Coupon does not exist    }    }
+        return $discount_id ? $coupon_code : false;
     }
 
     public static function getAffilateEndPoint()
