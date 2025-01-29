@@ -139,9 +139,4 @@ class CartController
         add_action('edd_before_checkout_cart', [__CLASS__, 'removeInvalidCoupons'], 11, 1);
     }
 
-    /*public static function isOwnAffiliateCoupon($member, $email)
-    {
-        return !empty($email) && $email == $member->email;
-    }*/
-
 }

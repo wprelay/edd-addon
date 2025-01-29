@@ -148,6 +148,7 @@ class OrderPlacedController
         $commissionTier = CommissionTier::findBy('program_id', $program->id);
 
         $commissionDetails = Program::calculateCommission($order, $relayWpOrder, $program);
+
         $commissionEarningIds = [];
         if ($commissionDetails) {
             $commissionEarningId =apply_filters('rwpa_edd_create_commission_earning',$commissionDetails, $affiliate, $order, $relayWpOrder, $program);
