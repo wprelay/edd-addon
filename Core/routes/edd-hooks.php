@@ -12,7 +12,6 @@ use EDDA\Affiliate\Core\Controllers\StoreFront\OrderPlacedController;
 
 $store_front_hooks = [
     'actions' => [
-        'init' => ['callable' => [AccountController::class, 'registerAffiliateEndPoint'], 'priority' => 10, 'accepted_args' => 1],
 
         'edd_insert_payment' => ['callable' => [OrderPlacedController::class, 'orderCreatedFromBlockCheckout'], 'priority' => 10, 'accepted_args' => 1],
         'edd_update_payment_status' => ['callable' => [OrderPlacedController::class, 'orderStatusUpdated'], 'priority' => 10, 'accepted_args' => 3],
@@ -28,8 +27,6 @@ $store_front_hooks = [
                 ['callable' => [CartController::class, 'removeInvalidCoupons'], 'priority' => 11, 'accepted_args' => 1],
             ];
         },
-        //Click Save Changes in General Permalink Settings to Reflect
-        'woocommerce_account_relay-affiliate-marketing_endpoint' => ['callable' => [AccountController::class, 'registerAffiliateEndpointContent'], 'priority' => 10, 'accepted_args' => 1],
     ],
 
 
@@ -40,9 +37,7 @@ $store_front_hooks = [
 ];
 
 $admin_hooks = [
-    'actions' => [
-
-    ],
+    'actions' => [],
 
     'filters' => [
         'edd_email_templates' => ['callable' => [EmailController::class, 'addEmails'], 'priority' => 10, 'accepted_args' => 1],
