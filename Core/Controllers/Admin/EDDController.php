@@ -11,8 +11,6 @@ use RelayWp\Affiliate\Core\Resources\WC\CountryCollection;
 use RelayWp\Affiliate\Core\Resources\WC\StateCollection;
 use Cartrabbit\Request\Request;
 use Cartrabbit\Request\Response;
-use WC_Countries;
-use WC_Product_Query;
 
 class EDDController
 {
@@ -22,15 +20,14 @@ class EDDController
             $search_term = $request->get('search');
 
             $countries = edd_get_country_list();
+
             if (!is_array($countries) || empty($countries) || !is_string($search_term) || empty($search_term)) {
                 return [];
             }
 
-            $countries = array_filter($countries, function ($value) use ($search_term) {
+            $countries = array_filter($countries, function ($value, $key) use ($search_term) {
                 return strpos(strtolower($value), strtolower($search_term)) !== false;
-            });
-
-            $countries = array_values($countries);
+            }, ARRAY_FILTER_USE_BOTH);
 
             // Wrap the country names in a collection for response
             return CountryCollection::collection([$countries]);
@@ -62,13 +59,10 @@ class EDDController
 
             // Filter states based on the search term
             if (!empty($search_term)) {
-                $states = array_filter($states, function ($value) use ($search_term) {
+                $states = array_filter($states, function ($value, $key) use ($search_term) {
                     return strpos(strtolower($value), strtolower($search_term)) !== false;
-                });
+                }, ARRAY_FILTER_USE_BOTH);
             }
-
-            $states = array_values($states);
-
             // Output the states
             return StateCollection::collection([$states]);
         } catch (\Exception | \Error $exception) {
@@ -150,11 +144,9 @@ class EDDController
             $data = (array)apply_filters('rwpa_categories_search_in_customer_discount_coupon', $data);
 
             Response::success(['categories' => $data]);
-
         } catch (\Exception | Error $exception) {
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());
         }
     }
 }
-
