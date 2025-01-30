@@ -6,7 +6,7 @@ defined("ABSPATH") or exit;
 
 use DateTime;
 use EDDA\Affiliate\App\Helpers\Functions;
-use EDDA\Affiliate\App\Model;
+use RelayWP\Affiliate\App\Model;
 class Program extends Model
 {
 

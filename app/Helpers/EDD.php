@@ -61,12 +61,6 @@ class EDD
         return $discount_id;
     }
 
-
-    public static function getProductNameWithID($product_id, $prefix = '#')
-    {
-        return $prefix . $product_id . ' ' . html_entity_decode(get_the_title($product_id));
-    }
-
     public static function getCountryWithLabel($countryCode)
     {
         if (!function_exists('edd_get_country_list')) return $countryCode;
@@ -133,20 +127,6 @@ class EDD
         return class_exists('EDD') && isset(EDD()->session) && EDD()->session != null;
     }
 
-    /*public static function getAppliedCouponsforOrder($order_id)
-    {
-        if (!is_object($order_id) && empty($order_id)) {
-            $order = wc_get_order($order_id);
-        } else {
-            $order = $order_id;
-        }
-
-        // Get applied coupons from the order
-        $applied_coupons = $order->get_coupon_codes();
-
-        return $applied_coupons;
-    }*/
-
     public static function getTotalPrice($order)
     {
         $excludeShipping = (bool)Settings::get('general_settings.commission_settings.exclude_shipping', false);
@@ -166,14 +146,6 @@ class EDD
         return apply_filters('rwpa_get_total_price_of_the_order', $orderTotal);
     }
 
-    /*public static function removeCoupon(string $code): bool
-    {
-        if(!WC::isWoocommerceIntsalled()){
-            return $code;
-        }
-        return function_exists('WC') && isset(WC()->cart)
-            && Util::isMethodExists(WC()->cart, 'remove_coupon') && WC()->cart->remove_coupon($code);
-    }*/
     public static function isCouponAvailable($coupon_code)
     {
         if (!function_exists('edd_get_discount_by_code') || empty($coupon_code)) {
@@ -220,13 +192,6 @@ class EDD
         return get_bloginfo('name');
     }
 
-    public static function getAdminDashboard()
-    {
-        $pluginSlug = EDDA_PLUGIN_SLUG;
-
-        return admin_url("admin.php?page={$pluginSlug}#");
-    }
-
     public static function getStates($countryCode)
     {
         if (!$countryCode) {
@@ -237,12 +202,6 @@ class EDD
             return isset($states) ? $states : [];
         }
         return [];
-    }
-
-    public static function getOrderEditUrl($order_id)
-    {
-        return null;
-        get_edit_post_link($order_id, '');
     }
 
     public static function getEDDCurrencySymbolCode($code = 'USD')
@@ -260,19 +219,6 @@ class EDD
         }
         return [];
     }
-
-    /* public static function isHPOSEnabled()
-    {
-        if (! class_exists('\Automattic\WooCommerce\Utilities\OrderUtil')) {
-            return false;
-        }
-
-        if (\Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()) {
-            return true;
-        }
-
-        return false;
-    }*/
 
     public static function getDefaultCurrency()
     {

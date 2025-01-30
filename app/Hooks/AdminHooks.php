@@ -22,18 +22,4 @@ class AdminHooks extends RegisterHooks
 
     public static function head() {}
 
-    public static function addMenu()
-    {
-        $pluginName = RWPA_PLUGIN_NAME;
-
-        add_menu_page(
-            $pluginName,
-            $pluginName,
-            'manage_options',
-            RWPA_PLUGIN_SLUG,
-            [PageController::class, 'show'],
-            'dashicons-money',
-            56
-        );
-    }
 }
