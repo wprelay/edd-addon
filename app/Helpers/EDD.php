@@ -47,6 +47,7 @@ class EDD
         }
         $discount_id = edd_add_discount($data);
 
+
         if (!$discount_id) {
             return false;
         }
@@ -199,7 +200,10 @@ class EDD
     {
         $discount_id = edd_get_discount_id_by_code($coupon_code);
 
-        return $discount_id ? $coupon_code : false;
+        if(empty($discount_id)){
+            return false;
+        }
+        return true;
     }
 
     public static function getAffilateEndPoint()
