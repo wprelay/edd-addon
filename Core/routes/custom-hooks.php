@@ -31,7 +31,7 @@ $store_front_hooks = [
         'rwpa_get_commission_details_for_edd_percentage_per_sale_type' => ['callable' => [CommissionTier::class, 'getPercentagePerSaleAmountDetail'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getRecursiveDataToStore'], 'priority' => 10, 'accepted_args' => 4],
         'rwpa_get_core_recursive_data_to_store' => ['callable' => [CommissionTier::class, 'getCoreRecursiveData'], 'priority' => 10, 'accepted_args' => 4],
-        'rwpa_edd_track_affiliate_order' => function(){
+        'rwpa_edd_track_affiliate_order' => function () {
             return [
                 ['callable' => [Order::class, 'isNeedToTrackTheOrder'], 'priority' => 10, 'accepted_args' => 2],
                 ['callable' => [OrderController::class, 'isRecurringOrder'], 'priority' => 11, 'accepted_args' => 2],
@@ -81,6 +81,7 @@ $admin_hooks = [
         'rwpa_record_rwt_payment' => ['callable' => [RWPPayment::class, 'processPayment'], 'priority' => 10, 'accepted_args' => 2],
     ],
     'filters' => [
+        'rwpa_get_order_statues_list' => ['callable' => [EDD::class, 'getOrderStatusList'], 'priority' => 12, 'accepted_args' => 1],
         'rwpa_get_payment_methods' => ['callable' => [RWPPayment::class, 'getPaymentSources'], 'priority' => 11, 'accepted_args' => 2],
         'rwpa_payment_process_sources' => function () {
             return [

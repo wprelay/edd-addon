@@ -204,9 +204,8 @@ class EDD
 
     public static function getAffilateEndPoint()
     {
-        if(function_exists('wc_get_account_endpoint_url') && !WC::isWoocommerceIntsalled())
-        {
-            $endpoint_url=wc_get_account_endpoint_url('relay-affiliate-marketing');
+        if (function_exists('wc_get_account_endpoint_url') && !WC::isWoocommerceIntsalled()) {
+            $endpoint_url = wc_get_account_endpoint_url('relay-affiliate-marketing');
             return $endpoint_url;
         }
         return '';
@@ -258,7 +257,7 @@ class EDD
         return [];
     }
 
-   /* public static function isHPOSEnabled()
+    /* public static function isHPOSEnabled()
     {
         if (! class_exists('\Automattic\WooCommerce\Utilities\OrderUtil')) {
             return false;
@@ -278,15 +277,16 @@ class EDD
         }
         return '';
     }
-    public static function getCurrencySymbol($symbol,$code){
-        switch ( $code ) {
-            case "GBP" :
+    public static function getCurrencySymbol($symbol, $code)
+    {
+        switch ($code) {
+            case "GBP":
                 $symbol = '&pound;';
                 break;
-            case "BRL" :
+            case "BRL":
                 $symbol = 'R&#36;';
                 break;
-            case "EUR" :
+            case "EUR":
                 $symbol = '&euro;';
                 break;
             case 'USD': // US Dollar
@@ -355,10 +355,10 @@ class EDD
             case 'RUB': // Russian Ruble
                 $symbol = '&#8381;'; // ₽
                 break;
-            case "JPY" :
+            case "JPY":
                 $symbol = '&yen;';
                 break;
-            case "AOA" :
+            case "AOA":
                 $symbol = 'Kz';
                 break;
             default:
@@ -367,20 +367,22 @@ class EDD
         }
         return $symbol;
     }
-    public static function getOrderStatus($order_status){
-        if($order_status=='complete'){
+    public static function getOrderStatus($order_status)
+    {
+        if ($order_status == 'complete') {
             return 'completed';
         }
         return $order_status;
     }
     public static function getEDDCountries()
     {
-        if(function_exists('edd_get_country_list')){
+        if (function_exists('edd_get_country_list')) {
             return edd_get_country_list();
         }
         return [];
     }
-    public static function getOrderStatusSettings($order_status){
+    public static function getOrderStatusSettings($order_status)
+    {
         $result = [];
         foreach ($order_status as $status) {
             switch ($status) {
@@ -393,5 +395,37 @@ class EDD
             }
         }
         return $result;
+    }
+
+    public static function getOrderStatusList($statuses = [])
+    {
+        if (function_exists('edd_get_payment_statuses')) {
+            $statuses =  edd_get_payment_statuses();
+        }
+
+        return [
+            'successful' => static::getSuccessfulOrderStatues($statuses),
+            'failure' => static::getFailureOrderStatuses($statuses),
+        ];
+    }
+
+    public static function getSuccessfulOrderStatues($statuses)
+    {
+        $successful_statuses = ['complete', 'processing', 'preapproval'];
+
+        return array_filter($statuses, function ($key) use ($successful_statuses) {
+            return in_array($key, $successful_statuses);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    public static function getFailureOrderStatuses($statuses)
+    {
+        $failed_statuses = ['failed', 'cancelled', 'abandoned', 'revoked', 'refunded'];
+
+        $filtered_failed_statuses = array_filter($statuses, function ($key) use ($failed_statuses) {
+            return in_array($key, $failed_statuses);
+        }, ARRAY_FILTER_USE_KEY);
+
+        return $filtered_failed_statuses;
     }
 }
