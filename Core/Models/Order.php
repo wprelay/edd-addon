@@ -7,7 +7,7 @@ defined("ABSPATH") or exit;
 use EDDA\Affiliate\App\Helpers\Functions;
 use EDDA\Affiliate\App\Helpers\EDD;
 use RelayWp\Affiliate\Core\Models\Customer;
-use EDDA\Affiliate\App\Model;
+use RelayWp\Affiliate\App\Model;
 use DateTime;
 class Order extends Model
 {

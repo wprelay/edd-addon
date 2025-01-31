@@ -4,7 +4,7 @@ namespace EDDA\Affiliate\Core\Models;
 
 defined("ABSPATH") or exit;
 
-use EDDA\Affiliate\App\Model;
+use RelayWp\Affiliate\App\Model;
 
 class CouponPayout extends Model
 {

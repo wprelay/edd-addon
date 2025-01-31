@@ -18,22 +18,22 @@ class EDD
 
         // Prepare the discount data
         $data = [
-            'name'              => $discountData['name'], // Discount name
-            'code'              => $discountData['code'], // Discount code
-            'type'              => 'discount',
-            'description'       => $discountData['description'],
-            'status'            => $discountData['status'] ?? 'active', // Default to active if not provided
-            'amount_type'       => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
-            'amount'            => $discountData['amount'], // Discount amount
-            'max_uses'          => $discountData['max_uses'] ?? 0, // Max usage limit
-            'start'             => !empty($discountData['start_date']) ? $discountData['start_date'] : null,
-            'expiration'        => !empty($discountData['end_date']) ? $discountData['expiry_date'] : null,
+            'name' => $discountData['name'], // Discount name
+            'code' => $discountData['code'], // Discount code
+            'type' => 'discount',
+            'description' => $discountData['description'],
+            'status' => $discountData['status'] ?? 'active', // Default to active if not provided
+            'amount_type' => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
+            'amount' => $discountData['amount'], // Discount amount
+            'max_uses' => $discountData['max_uses'] ?? 0, // Max usage limit
+            'start' => !empty($discountData['start_date']) ? $discountData['start_date'] : null,
+            'expiration' => !empty($discountData['end_date']) ? $discountData['expiry_date'] : null,
             'min_charge_amount' => $discountData['min_charge_amount'] ?? 0, // Minimum cart amount
-            'product_reqs'      => $discountData['product_reqs'] ?? [], // Required products
+            'product_reqs' => $discountData['product_reqs'] ?? [], // Required products
             'once_per_customer' => $discountData['once_per_customer'] ?? 0,
             'product_condition' => 'all', // Use 'all' or 'any' based on your requirement
             'excluded_products' => $discountData['excluded_products'] ?? [],
-            'scope'             => $discountData['scope'] // Excluded products
+            'scope' => $discountData['scope'] // Excluded products
         ];
 
         $existing_discount = edd_get_discount_by_code($discountData['code']);
@@ -61,12 +61,6 @@ class EDD
         return $discount_id;
     }
 
-
-    public static function getProductNameWithID($product_id, $prefix = '#')
-    {
-        return $prefix . $product_id . ' ' . html_entity_decode(get_the_title($product_id));
-    }
-
     public static function getCountryWithLabel($countryCode)
     {
         if (!function_exists('edd_get_country_list')) return $countryCode;
@@ -87,14 +81,10 @@ class EDD
     }
 
 
-    public static function getStateWithLabel($state = [],$countryCode, $stateCode)
+    public static function getStateWithLabel($state = [], $countryCode, $stateCode)
     {
         $states = EDD::getStates($countryCode);
         if (isset($states[$stateCode])) {
-            error_log(print_r([
-                'value' => $stateCode,
-                'label' => $states[$stateCode]
-            ],true));
             return [
                 'value' => $stateCode,
                 'label' => $states[$stateCode]
@@ -133,20 +123,6 @@ class EDD
         return class_exists('EDD') && isset(EDD()->session) && EDD()->session != null;
     }
 
-    /*public static function getAppliedCouponsforOrder($order_id)
-    {
-        if (!is_object($order_id) && empty($order_id)) {
-            $order = wc_get_order($order_id);
-        } else {
-            $order = $order_id;
-        }
-
-        // Get applied coupons from the order
-        $applied_coupons = $order->get_coupon_codes();
-
-        return $applied_coupons;
-    }*/
-
     public static function getTotalPrice($order)
     {
         $excludeShipping = (bool)Settings::get('general_settings.commission_settings.exclude_shipping', false);
@@ -166,14 +142,6 @@ class EDD
         return apply_filters('rwpa_get_total_price_of_the_order', $orderTotal);
     }
 
-    /*public static function removeCoupon(string $code): bool
-    {
-        if(!WC::isWoocommerceIntsalled()){
-            return $code;
-        }
-        return function_exists('WC') && isset(WC()->cart)
-            && Util::isMethodExists(WC()->cart, 'remove_coupon') && WC()->cart->remove_coupon($code);
-    }*/
     public static function isCouponAvailable($coupon_code)
     {
         if (!function_exists('edd_get_discount_by_code') || empty($coupon_code)) {
@@ -200,7 +168,7 @@ class EDD
     {
         $discount_id = edd_get_discount_id_by_code($coupon_code);
 
-        if(empty($discount_id)){
+        if (empty($discount_id)) {
             return false;
         }
         return true;
@@ -220,13 +188,6 @@ class EDD
         return get_bloginfo('name');
     }
 
-    public static function getAdminDashboard()
-    {
-        $pluginSlug = EDDA_PLUGIN_SLUG;
-
-        return admin_url("admin.php?page={$pluginSlug}#");
-    }
-
     public static function getStates($countryCode)
     {
         if (!$countryCode) {
@@ -237,12 +198,6 @@ class EDD
             return isset($states) ? $states : [];
         }
         return [];
-    }
-
-    public static function getOrderEditUrl($order_id)
-    {
-        return null;
-        get_edit_post_link($order_id, '');
     }
 
     public static function getEDDCurrencySymbolCode($code = 'USD')
@@ -261,19 +216,6 @@ class EDD
         return [];
     }
 
-    /* public static function isHPOSEnabled()
-    {
-        if (! class_exists('\Automattic\WooCommerce\Utilities\OrderUtil')) {
-            return false;
-        }
-
-        if (\Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()) {
-            return true;
-        }
-
-        return false;
-    }*/
-
     public static function getDefaultCurrency()
     {
         if (function_exists('edd_get_currency')) {
@@ -281,6 +223,7 @@ class EDD
         }
         return '';
     }
+
     public static function getCurrencySymbol($symbol, $code)
     {
         switch ($code) {
@@ -371,6 +314,7 @@ class EDD
         }
         return $symbol;
     }
+
     public static function getOrderStatus($order_status)
     {
         if ($order_status == 'complete') {
@@ -378,6 +322,7 @@ class EDD
         }
         return $order_status;
     }
+
     public static function getEDDCountries()
     {
         if (function_exists('edd_get_country_list')) {
@@ -385,6 +330,7 @@ class EDD
         }
         return [];
     }
+
     public static function getOrderStatusSettings($order_status)
     {
         $result = [];
@@ -404,7 +350,7 @@ class EDD
     public static function getOrderStatusList($statuses = [])
     {
         if (function_exists('edd_get_payment_statuses')) {
-            $statuses =  edd_get_payment_statuses();
+            $statuses = edd_get_payment_statuses();
         }
 
         return [

@@ -10,7 +10,7 @@ use RelayWp\Affiliate\Core\Models\CustomerDiscount;
 use EDDA\Affiliate\App\Helpers\EDD;
 use RelayWp\Affiliate\App\Helpers\WordpressHelper;
 use Cartrabbit\Request\Request;
-use EDDA\Affiliate\App\Model;
+use RelayWp\Affiliate\App\Model;
 use RelayWp\Affiliate\App\Services\Settings;
 use WP_Error;
 class Affiliate extends Model

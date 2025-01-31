@@ -52,9 +52,8 @@ $store_front_hooks = [
         'edda_search_categories_list' => ['callable' => [EDDController::class, 'getCategoriesList'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_set_session' => ['callable' => [EDD::class, 'setSession'], 'priority' => 8, 'accepted_args' => 2],
         'rwpa_get_session' => ['callable' => [EDD::class, 'getSession'], 'priority' => 8, 'accepted_args' => 2],
-        'rwpa_get_edd_countries' => ['callable' => [EDD::class, 'getEDDCountries'], 'priority' => 10, 'accepted_args' => 0],
-        'rwpa_get_search_countries' => ['callable' => [EDDController::class, 'getSearchEDDCountries'], 'priority' => 10, 'accepted_args' => 1],
-        'rwpa_get_search_states' => ['callable' => [EDDController::class, 'getSearchEDDStates'], 'priority' => 10, 'accepted_args' => 1],
+        'rwpa_get_country_lists' => ['callable' => [EDD::class, 'getEDDCountries'], 'priority' => 11, 'accepted_args' => 0],
+        'rwpa_get_states' => ['callable' => [EDD::class, 'getStates'], 'priority' => 11, 'accepted_args' => 1],
         'rwpa_edd_get_order_status' => ['callable' => [EDD::class, 'getOrderStatusSettings'], 'priority' => 10, 'accepted_args' => 1],
         'rwpa_update_affiliate_coupons_in_db' => ['callable' => [Affiliate::class, 'updateCoupon'], 'priority' => 9, 'accepted_args' => 3],
         'rwpa_get_commission_details_for_edd_rule_based_type' => ['callable' => [RulesHelper::class, 'calculateCommissions'], 'priority' => 10, 'accepted_args' => 4],
@@ -66,6 +65,7 @@ $store_front_hooks = [
         'rwpa_affiliate_create_account' => ['callable' => [Affiliate::class, 'createWPAccount'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_update_coupon_code' => ['callable' => [AffiliateCoupon::class, 'updateDiscountCode'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_is_coupon_exist' => ['callable' => [EDD::class, 'isCouponExists'], 'priority' => 11, 'accepted_args' => 1],
+        'rwpa_start_scheduling_processing' => ['callable' => [EDDController::class, 'scheduleActions'], 'priority' => 11, 'accepted_args' => 4],
     ]
 ];
 
