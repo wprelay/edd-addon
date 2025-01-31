@@ -18,22 +18,22 @@ class EDD
 
         // Prepare the discount data
         $data = [
-            'name'              => $discountData['name'], // Discount name
-            'code'              => $discountData['code'], // Discount code
-            'type'              => 'discount',
-            'description'       => $discountData['description'],
-            'status'            => $discountData['status'] ?? 'active', // Default to active if not provided
-            'amount_type'       => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
-            'amount'            => $discountData['amount'], // Discount amount
-            'max_uses'          => $discountData['max_uses'] ?? 0, // Max usage limit
-            'start'             => !empty($discountData['start_date']) ? $discountData['start_date'] : null,
-            'expiration'        => !empty($discountData['end_date']) ? $discountData['expiry_date'] : null,
+            'name' => $discountData['name'], // Discount name
+            'code' => $discountData['code'], // Discount code
+            'type' => 'discount',
+            'description' => $discountData['description'],
+            'status' => $discountData['status'] ?? 'active', // Default to active if not provided
+            'amount_type' => $discountData['amount_type'], // Discount type (e.g., 'percent' or 'flat')
+            'amount' => $discountData['amount'], // Discount amount
+            'max_uses' => $discountData['max_uses'] ?? 0, // Max usage limit
+            'start' => !empty($discountData['start_date']) ? $discountData['start_date'] : null,
+            'expiration' => !empty($discountData['end_date']) ? $discountData['expiry_date'] : null,
             'min_charge_amount' => $discountData['min_charge_amount'] ?? 0, // Minimum cart amount
-            'product_reqs'      => $discountData['product_reqs'] ?? [], // Required products
+            'product_reqs' => $discountData['product_reqs'] ?? [], // Required products
             'once_per_customer' => $discountData['once_per_customer'] ?? 0,
             'product_condition' => 'all', // Use 'all' or 'any' based on your requirement
             'excluded_products' => $discountData['excluded_products'] ?? [],
-            'scope'             => $discountData['scope'] // Excluded products
+            'scope' => $discountData['scope'] // Excluded products
         ];
 
         $existing_discount = edd_get_discount_by_code($discountData['code']);
@@ -81,14 +81,10 @@ class EDD
     }
 
 
-    public static function getStateWithLabel($state = [],$countryCode, $stateCode)
+    public static function getStateWithLabel($state = [], $countryCode, $stateCode)
     {
         $states = EDD::getStates($countryCode);
         if (isset($states[$stateCode])) {
-            error_log(print_r([
-                'value' => $stateCode,
-                'label' => $states[$stateCode]
-            ],true));
             return [
                 'value' => $stateCode,
                 'label' => $states[$stateCode]
@@ -172,7 +168,7 @@ class EDD
     {
         $discount_id = edd_get_discount_id_by_code($coupon_code);
 
-        if(empty($discount_id)){
+        if (empty($discount_id)) {
             return false;
         }
         return true;
@@ -227,6 +223,7 @@ class EDD
         }
         return '';
     }
+
     public static function getCurrencySymbol($symbol, $code)
     {
         switch ($code) {
@@ -317,6 +314,7 @@ class EDD
         }
         return $symbol;
     }
+
     public static function getOrderStatus($order_status)
     {
         if ($order_status == 'complete') {
@@ -324,6 +322,7 @@ class EDD
         }
         return $order_status;
     }
+
     public static function getEDDCountries()
     {
         if (function_exists('edd_get_country_list')) {
@@ -331,6 +330,7 @@ class EDD
         }
         return [];
     }
+
     public static function getOrderStatusSettings($order_status)
     {
         $result = [];
@@ -350,7 +350,7 @@ class EDD
     public static function getOrderStatusList($statuses = [])
     {
         if (function_exists('edd_get_payment_statuses')) {
-            $statuses =  edd_get_payment_statuses();
+            $statuses = edd_get_payment_statuses();
         }
 
         return [

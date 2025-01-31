@@ -7,6 +7,7 @@ defined("ABSPATH") or exit;
 use Error;
 use RelayWp\Affiliate\App\Helpers\PluginHelper;
 use EDDA\Affiliate\App\Helpers\EDD;
+use RelayWp\Affiliate\App\Services\Settings;
 use RelayWp\Affiliate\Core\Resources\WC\CountryCollection;
 use RelayWp\Affiliate\Core\Resources\WC\StateCollection;
 use Cartrabbit\Request\Request;
@@ -147,6 +148,36 @@ class EDDController
         } catch (\Exception | Error $exception) {
             PluginHelper::logError('Error Occurred While Processing', [__CLASS__, __FUNCTION__], $exception);
             return Response::error(PluginHelper::serverErrorMessage());
+        }
+    }
+    public static function scheduleActions($value,$hook,$payoutId,$source){
+        switch($hook){
+            case 'rwpa_enqueue_payments':
+                if (!wp_next_scheduled($hook, [$payoutId, $source])) {
+                    $is_scheduled= wp_schedule_single_event(strtotime("+1 minute"), $hook, [$payoutId, $source]);
+                    return $is_scheduled;
+                }
+
+            case 'rwpa_auto_approve_commission':
+                $delay = apply_filters('rwpa_auto_approval_delay_in_days', Settings::get('affiliate_settings.general.auto_approve_delay_in_days'));
+                $delay = $delay ?: 0;
+                if (!wp_next_scheduled($hook, [$source])){
+                    $is_scheduled= wp_schedule_single_event(strtotime("+{$delay} days"), 'rwpa_auto_approve_commission', [$source]);
+                    return $is_scheduled;
+                }
+
+            case 'rwpa_update_affiliate_coupons':
+                if(!wp_next_scheduled($hook)) {
+                    $is_scheduled= wp_schedule_single_event(strtotime('now'), $hook);
+                    return $is_scheduled;
+                }
+            case 'rwpa_process_coupon_payouts':
+                if (!wp_next_scheduled($hook, [$payoutId])) {
+                    $is_scheduled= wp_schedule_single_event(time(), $hook, [$payoutId]);
+                    return $is_scheduled;
+                }
+            default:
+                return false;
         }
     }
 }

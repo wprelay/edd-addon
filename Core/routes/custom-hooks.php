@@ -65,6 +65,7 @@ $store_front_hooks = [
         'rwpa_affiliate_create_account' => ['callable' => [Affiliate::class, 'createWPAccount'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_update_coupon_code' => ['callable' => [AffiliateCoupon::class, 'updateDiscountCode'], 'priority' => 10, 'accepted_args' => 2],
         'rwpa_is_coupon_exist' => ['callable' => [EDD::class, 'isCouponExists'], 'priority' => 11, 'accepted_args' => 1],
+        'rwpa_start_scheduling_processing' => ['callable' => [EDDController::class, 'scheduleActions'], 'priority' => 11, 'accepted_args' => 4],
     ]
 ];
 
